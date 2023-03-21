@@ -1,0 +1,39 @@
+---
+title: "data_overview"
+author: "Filip Wierzbicki"
+date: "3/21/2023"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{bash,eval=FALSE}
+#strain data:
+awk '{print $1}' SRR8247551.sra.fastq|paste - - - -|awk 'length($2)==140'|tr "\t" "\n"|gzip -c > wXD1.fq.gz
+for i in *1_mod.fastq.gz;do n=${i%_1_mod.fastq.gz};gzip -cd ${i} ${n}_2_mod.fastq.gz|gzip -c > ../${n}.fq.gz;done #merging PE data into 1 file
+for i in *gz;do gzip -cd $i|awk '{print $1}'|cut -c-100|gzip -c > trimmed/${i};done #trims the fastq file to 100bp
+
+
+
+#divyas data:
+cd /Volumes/Temp2/filip/2040A/data/divya
+for i in *_1.fq.gz;do n=${i%_1.fq.gz}; gzip -cd ${i} ${n}_2.fq.gz|gzip -c > merged_PE/${n}.fq.gz ;done #merging PE data into 1 file
+
+for i in *gz;do n=${i#*sim_};n=${n/G/g};n=${n/R/r};n=${n/_*_/_};echo $n;done
+
+
+#roberts data:
+cd /Volumes/Temp2/filip/2040A/data/hotcold
+for i in *gz;do n=${i/hot/t28-18_g};n=${n/cold/t20-10_g};n=${n/base/tX_g0};mv $i Dsim_S_${n};done
+
+
+
+
+
+
+```
+
+
