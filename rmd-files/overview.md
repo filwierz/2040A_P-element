@@ -67,90 +67,92 @@ names(t)<-c("species","variant","temp.","gen.","rep.","rl.(trimmed)","file")
 r<-read.table("/Volumes/Temp2/filip/2040A/results/overview/samples/readcounts.txt")
 names(r)<-c("rc","file")
 r$rc<-paste (round(r$rc/1000000,1),"M",sep = "")
+names(r)<-c("rc.","file")
 
 tr<-merge(r,t,by="file")
-knitr::kable(t)
+tr<-subset(tr,select=c("species","variant","temp.","gen.","rep.","rl.(trimmed)","rc.","file"))
+knitr::kable(tr)
 ```
 
-| species | variant | temp. | gen. | rep. | rl.(trimmed) | file                            |
-| :------ | :------ | :---: | :--- | :--- | :----------- | :------------------------------ |
-| Dmel    | M       |  25   | 34   | 1    | 100(100)     | Dmel\_M\_t25\_g34\_r1.fq.gz     |
-| Dmel    | M       |  25   | 34   | 2    | 100(100)     | Dmel\_M\_t25\_g34\_r2.fq.gz     |
-| Dmel    | S       |  25   | 34   | 1    | 100(100)     | Dmel\_S\_t25\_g34\_r1.fq.gz     |
-| Dmel    | S       |  25   | 34   | 2    | 100(100)     | Dmel\_S\_t25\_g34\_r2.fq.gz     |
-| Dsim    | M       |  25   | 0    | 1    | 125(100)     | Dsim\_M\_t25\_g0\_r1.fq.gz      |
-| Dsim    | M       |  25   | 10   | 2    | 125(100)     | Dsim\_M\_t25\_g10\_r2.fq.gz     |
-| Dsim    | M       |  25   | 10   | 3    | 125(100)     | Dsim\_M\_t25\_g10\_r3.fq.gz     |
-| Dsim    | M       |  25   | 10   | 4    | 125(100)     | Dsim\_M\_t25\_g10\_r4.fq.gz     |
-| Dsim    | M       |  25   | 1    | 2    | 125(100)     | Dsim\_M\_t25\_g1\_r2.fq.gz      |
-| Dsim    | M       |  25   | 1    | 3    | 125(100)     | Dsim\_M\_t25\_g1\_r3.fq.gz      |
-| Dsim    | M       |  25   | 1    | 4    | 125(100)     | Dsim\_M\_t25\_g1\_r4.fq.gz      |
-| Dsim    | M       |  25   | 20   | 2    | 125(100)     | Dsim\_M\_t25\_g20\_r2.fq.gz     |
-| Dsim    | M       |  25   | 20   | 3    | 125(100)     | Dsim\_M\_t25\_g20\_r3.fq.gz     |
-| Dsim    | M       |  25   | 20   | 4    | 125(100)     | Dsim\_M\_t25\_g20\_r4.fq.gz     |
-| Dsim    | M       |  25   | 34   | 2    | 125(100)     | Dsim\_M\_t25\_g34\_r2.fq.gz     |
-| Dsim    | M       |  25   | 34   | 3    | 125(100)     | Dsim\_M\_t25\_g34\_r3.fq.gz     |
-| Dsim    | M       |  25   | 34   | 4    | 125(100)     | Dsim\_M\_t25\_g34\_r4.fq.gz     |
-| Dsim    | M       |  25   | 40   | 2    | 125(100)     | Dsim\_M\_t25\_g40\_r2.fq.gz     |
-| Dsim    | M       |  25   | 40   | 3    | 125(100)     | Dsim\_M\_t25\_g40\_r3.fq.gz     |
-| Dsim    | M       |  25   | 40   | 4    | 125(100)     | Dsim\_M\_t25\_g40\_r4.fq.gz     |
-| Dsim    | M       |  25   | 48   | 2    | 125(100)     | Dsim\_M\_t25\_g48\_r2.fq.gz     |
-| Dsim    | M       |  25   | 48   | 3    | 125(100)     | Dsim\_M\_t25\_g48\_r3.fq.gz     |
-| Dsim    | M       |  25   | 48   | 4    | 125(100)     | Dsim\_M\_t25\_g48\_r4.fq.gz     |
-| Dsim    | M       |  25   | 63   | 2    | 100(100)     | Dsim\_M\_t25\_g63\_r2.fq.gz     |
-| Dsim    | M       |  25   | 63   | 3    | 100(100)     | Dsim\_M\_t25\_g63\_r3.fq.gz     |
-| Dsim    | M       |  25   | 63   | 4    | 100(100)     | Dsim\_M\_t25\_g63\_r4.fq.gz     |
-| Dsim    | S       | 20-10 | 100  | 1    | 150(100)     | Dsim\_S\_t20-10\_g100\_r1.fq.gz |
-| Dsim    | S       | 20-10 | 100  | 3    | 150(100)     | Dsim\_S\_t20-10\_g100\_r3.fq.gz |
-| Dsim    | S       | 20-10 | 100  | 5    | 150(100)     | Dsim\_S\_t20-10\_g100\_r5.fq.gz |
-| Dsim    | S       | 20-10 | 10   | 1    | 100(100)     | Dsim\_S\_t20-10\_g10\_r1.fq.gz  |
-| Dsim    | S       | 20-10 | 10   | 3    | 100(100)     | Dsim\_S\_t20-10\_g10\_r3.fq.gz  |
-| Dsim    | S       | 20-10 | 10   | 5    | 100(100)     | Dsim\_S\_t20-10\_g10\_r5.fq.gz  |
-| Dsim    | S       | 20-10 | 20   | 1    | 100(100)     | Dsim\_S\_t20-10\_g20\_r1.fq.gz  |
-| Dsim    | S       | 20-10 | 20   | 3    | 100(100)     | Dsim\_S\_t20-10\_g20\_r3.fq.gz  |
-| Dsim    | S       | 20-10 | 20   | 5    | 100(100)     | Dsim\_S\_t20-10\_g20\_r5.fq.gz  |
-| Dsim    | S       | 20-10 | 30   | 1    | 100(100)     | Dsim\_S\_t20-10\_g30\_r1.fq.gz  |
-| Dsim    | S       | 20-10 | 30   | 3    | 100(100)     | Dsim\_S\_t20-10\_g30\_r3.fq.gz  |
-| Dsim    | S       | 20-10 | 30   | 5    | 100(100)     | Dsim\_S\_t20-10\_g30\_r5.fq.gz  |
-| Dsim    | S       | 20-10 | 40   | 1    | 120(100)     | Dsim\_S\_t20-10\_g40\_r1.fq.gz  |
-| Dsim    | S       | 20-10 | 40   | 3    | 120(100)     | Dsim\_S\_t20-10\_g40\_r3.fq.gz  |
-| Dsim    | S       | 20-10 | 40   | 5    | 120(100)     | Dsim\_S\_t20-10\_g40\_r5.fq.gz  |
-| Dsim    | S       | 20-10 | 50   | 1    | 150(100)     | Dsim\_S\_t20-10\_g50\_r1.fq.gz  |
-| Dsim    | S       | 20-10 | 50   | 3    | 150(100)     | Dsim\_S\_t20-10\_g50\_r3.fq.gz  |
-| Dsim    | S       | 20-10 | 50   | 5    | 150(100)     | Dsim\_S\_t20-10\_g50\_r5.fq.gz  |
-| Dsim    | S       | 20-10 | 60   | 1    | 150(100)     | Dsim\_S\_t20-10\_g60\_r1.fq.gz  |
-| Dsim    | S       | 20-10 | 60   | 3    | 150(100)     | Dsim\_S\_t20-10\_g60\_r3.fq.gz  |
-| Dsim    | S       | 20-10 | 60   | 5    | 150(100)     | Dsim\_S\_t20-10\_g60\_r5.fq.gz  |
-| Dsim    | S       | 20-10 | 70   | 1    | 150(100)     | Dsim\_S\_t20-10\_g70\_r1.fq.gz  |
-| Dsim    | S       | 20-10 | 70   | 3    | 150(100)     | Dsim\_S\_t20-10\_g70\_r3.fq.gz  |
-| Dsim    | S       | 20-10 | 70   | 5    | 150(100)     | Dsim\_S\_t20-10\_g70\_r5.fq.gz  |
-| Dsim    | S       | 20-10 | 80   | 1    | 150(100)     | Dsim\_S\_t20-10\_g80\_r1.fq.gz  |
-| Dsim    | S       | 20-10 | 80   | 3    | 150(100)     | Dsim\_S\_t20-10\_g80\_r3.fq.gz  |
-| Dsim    | S       | 20-10 | 80   | 5    | 150(100)     | Dsim\_S\_t20-10\_g80\_r5.fq.gz  |
-| Dsim    | S       | 20-10 | 90   | 1    | 150(100)     | Dsim\_S\_t20-10\_g90\_r1.fq.gz  |
-| Dsim    | S       | 20-10 | 90   | 3    | 150(100)     | Dsim\_S\_t20-10\_g90\_r3.fq.gz  |
-| Dsim    | S       | 20-10 | 90   | 5    | 150(100)     | Dsim\_S\_t20-10\_g90\_r5.fq.gz  |
-| Dsim    | S       | 28-18 | 10   | 1    | 100(100)     | Dsim\_S\_t28-18\_g10\_r1.fq.gz  |
-| Dsim    | S       | 28-18 | 10   | 3    | 100(100)     | Dsim\_S\_t28-18\_g10\_r3.fq.gz  |
-| Dsim    | S       | 28-18 | 10   | 5    | 100(100)     | Dsim\_S\_t28-18\_g10\_r5.fq.gz  |
-| Dsim    | S       | 28-18 | 20   | 1    | 100(100)     | Dsim\_S\_t28-18\_g20\_r1.fq.gz  |
-| Dsim    | S       | 28-18 | 20   | 3    | 100(100)     | Dsim\_S\_t28-18\_g20\_r3.fq.gz  |
-| Dsim    | S       | 28-18 | 20   | 5    | 100(100)     | Dsim\_S\_t28-18\_g20\_r5.fq.gz  |
-| Dsim    | S       | 28-18 | 30   | 1    | 100(100)     | Dsim\_S\_t28-18\_g30\_r1.fq.gz  |
-| Dsim    | S       | 28-18 | 30   | 3    | 100(100)     | Dsim\_S\_t28-18\_g30\_r3.fq.gz  |
-| Dsim    | S       | 28-18 | 30   | 5    | 100(100)     | Dsim\_S\_t28-18\_g30\_r5.fq.gz  |
-| Dsim    | S       | 28-18 | 40   | 1    | 100(100)     | Dsim\_S\_t28-18\_g40\_r1.fq.gz  |
-| Dsim    | S       | 28-18 | 40   | 3    | 100(100)     | Dsim\_S\_t28-18\_g40\_r3.fq.gz  |
-| Dsim    | S       | 28-18 | 40   | 5    | 100(100)     | Dsim\_S\_t28-18\_g40\_r5.fq.gz  |
-| Dsim    | S       | 28-18 | 50   | 1    | 100(100)     | Dsim\_S\_t28-18\_g50\_r1.fq.gz  |
-| Dsim    | S       | 28-18 | 50   | 3    | 100(100)     | Dsim\_S\_t28-18\_g50\_r3.fq.gz  |
-| Dsim    | S       | 28-18 | 50   | 5    | 100(100)     | Dsim\_S\_t28-18\_g50\_r5.fq.gz  |
-| Dsim    | S       | 28-18 | 60   | 1    | 100(100)     | Dsim\_S\_t28-18\_g60\_r1.fq.gz  |
-| Dsim    | S       | 28-18 | 60   | 3    | 100(100)     | Dsim\_S\_t28-18\_g60\_r3.fq.gz  |
-| Dsim    | S       | 28-18 | 60   | 5    | 100(100)     | Dsim\_S\_t28-18\_g60\_r5.fq.gz  |
-| Dsim    | S       |   X   | 0    | 1    | 100(100)     | Dsim\_S\_tX\_g0\_r1.fq.gz       |
-| Dsim    | S       |   X   | 0    | 3    | 100(100)     | Dsim\_S\_tX\_g0\_r3.fq.gz       |
-| Dsim    | S       |   X   | 0    | 5    | 100(100)     | Dsim\_S\_tX\_g0\_r5.fq.gz       |
+| species | variant | temp. | gen. | rep. | rl.(trimmed) | rc.    | file                            |
+| :------ | :------ | :---: | :--- | :--- | :----------- | :----- | :------------------------------ |
+| Dmel    | M       |  25   | 34   | 1    | 100(100)     | 60.8M  | Dmel\_M\_t25\_g34\_r1.fq.gz     |
+| Dmel    | M       |  25   | 34   | 2    | 100(100)     | 72.9M  | Dmel\_M\_t25\_g34\_r2.fq.gz     |
+| Dmel    | S       |  25   | 34   | 1    | 100(100)     | 78.7M  | Dmel\_S\_t25\_g34\_r1.fq.gz     |
+| Dmel    | S       |  25   | 34   | 2    | 100(100)     | 74.7M  | Dmel\_S\_t25\_g34\_r2.fq.gz     |
+| Dsim    | M       |  25   | 0    | 1    | 125(100)     | 34.6M  | Dsim\_M\_t25\_g0\_r1.fq.gz      |
+| Dsim    | M       |  25   | 1    | 2    | 125(100)     | 54.5M  | Dsim\_M\_t25\_g1\_r2.fq.gz      |
+| Dsim    | M       |  25   | 1    | 3    | 125(100)     | 53.7M  | Dsim\_M\_t25\_g1\_r3.fq.gz      |
+| Dsim    | M       |  25   | 1    | 4    | 125(100)     | 63.3M  | Dsim\_M\_t25\_g1\_r4.fq.gz      |
+| Dsim    | M       |  25   | 10   | 2    | 125(100)     | 62.4M  | Dsim\_M\_t25\_g10\_r2.fq.gz     |
+| Dsim    | M       |  25   | 10   | 3    | 125(100)     | 46.9M  | Dsim\_M\_t25\_g10\_r3.fq.gz     |
+| Dsim    | M       |  25   | 10   | 4    | 125(100)     | 44.7M  | Dsim\_M\_t25\_g10\_r4.fq.gz     |
+| Dsim    | M       |  25   | 20   | 2    | 125(100)     | 46.1M  | Dsim\_M\_t25\_g20\_r2.fq.gz     |
+| Dsim    | M       |  25   | 20   | 3    | 125(100)     | 57.9M  | Dsim\_M\_t25\_g20\_r3.fq.gz     |
+| Dsim    | M       |  25   | 20   | 4    | 125(100)     | 54.9M  | Dsim\_M\_t25\_g20\_r4.fq.gz     |
+| Dsim    | M       |  25   | 34   | 2    | 125(100)     | 68.4M  | Dsim\_M\_t25\_g34\_r2.fq.gz     |
+| Dsim    | M       |  25   | 34   | 3    | 125(100)     | 47.1M  | Dsim\_M\_t25\_g34\_r3.fq.gz     |
+| Dsim    | M       |  25   | 34   | 4    | 125(100)     | 50M    | Dsim\_M\_t25\_g34\_r4.fq.gz     |
+| Dsim    | M       |  25   | 40   | 2    | 125(100)     | 45.1M  | Dsim\_M\_t25\_g40\_r2.fq.gz     |
+| Dsim    | M       |  25   | 40   | 3    | 125(100)     | 53.7M  | Dsim\_M\_t25\_g40\_r3.fq.gz     |
+| Dsim    | M       |  25   | 40   | 4    | 125(100)     | 51.4M  | Dsim\_M\_t25\_g40\_r4.fq.gz     |
+| Dsim    | M       |  25   | 48   | 2    | 125(100)     | 47.3M  | Dsim\_M\_t25\_g48\_r2.fq.gz     |
+| Dsim    | M       |  25   | 48   | 3    | 125(100)     | 54.7M  | Dsim\_M\_t25\_g48\_r3.fq.gz     |
+| Dsim    | M       |  25   | 48   | 4    | 125(100)     | 50M    | Dsim\_M\_t25\_g48\_r4.fq.gz     |
+| Dsim    | M       |  25   | 63   | 2    | 100(100)     | 68.5M  | Dsim\_M\_t25\_g63\_r2.fq.gz     |
+| Dsim    | M       |  25   | 63   | 3    | 100(100)     | 73.8M  | Dsim\_M\_t25\_g63\_r3.fq.gz     |
+| Dsim    | M       |  25   | 63   | 4    | 100(100)     | 90.3M  | Dsim\_M\_t25\_g63\_r4.fq.gz     |
+| Dsim    | S       | 20-10 | 10   | 1    | 100(100)     | 69.4M  | Dsim\_S\_t20-10\_g10\_r1.fq.gz  |
+| Dsim    | S       | 20-10 | 10   | 3    | 100(100)     | 81.2M  | Dsim\_S\_t20-10\_g10\_r3.fq.gz  |
+| Dsim    | S       | 20-10 | 10   | 5    | 100(100)     | 68.3M  | Dsim\_S\_t20-10\_g10\_r5.fq.gz  |
+| Dsim    | S       | 20-10 | 100  | 1    | 150(100)     | 82M    | Dsim\_S\_t20-10\_g100\_r1.fq.gz |
+| Dsim    | S       | 20-10 | 100  | 3    | 150(100)     | 79.5M  | Dsim\_S\_t20-10\_g100\_r3.fq.gz |
+| Dsim    | S       | 20-10 | 100  | 5    | 150(100)     | 75.8M  | Dsim\_S\_t20-10\_g100\_r5.fq.gz |
+| Dsim    | S       | 20-10 | 20   | 1    | 100(100)     | 85.3M  | Dsim\_S\_t20-10\_g20\_r1.fq.gz  |
+| Dsim    | S       | 20-10 | 20   | 3    | 100(100)     | 50M    | Dsim\_S\_t20-10\_g20\_r3.fq.gz  |
+| Dsim    | S       | 20-10 | 20   | 5    | 100(100)     | 48.8M  | Dsim\_S\_t20-10\_g20\_r5.fq.gz  |
+| Dsim    | S       | 20-10 | 30   | 1    | 100(100)     | 58.4M  | Dsim\_S\_t20-10\_g30\_r1.fq.gz  |
+| Dsim    | S       | 20-10 | 30   | 3    | 100(100)     | 65.4M  | Dsim\_S\_t20-10\_g30\_r3.fq.gz  |
+| Dsim    | S       | 20-10 | 30   | 5    | 100(100)     | 66.2M  | Dsim\_S\_t20-10\_g30\_r5.fq.gz  |
+| Dsim    | S       | 20-10 | 40   | 1    | 120(100)     | 38.7M  | Dsim\_S\_t20-10\_g40\_r1.fq.gz  |
+| Dsim    | S       | 20-10 | 40   | 3    | 120(100)     | 93.8M  | Dsim\_S\_t20-10\_g40\_r3.fq.gz  |
+| Dsim    | S       | 20-10 | 40   | 5    | 120(100)     | 43.5M  | Dsim\_S\_t20-10\_g40\_r5.fq.gz  |
+| Dsim    | S       | 20-10 | 50   | 1    | 150(100)     | 77.4M  | Dsim\_S\_t20-10\_g50\_r1.fq.gz  |
+| Dsim    | S       | 20-10 | 50   | 3    | 150(100)     | 82.1M  | Dsim\_S\_t20-10\_g50\_r3.fq.gz  |
+| Dsim    | S       | 20-10 | 50   | 5    | 150(100)     | 77.7M  | Dsim\_S\_t20-10\_g50\_r5.fq.gz  |
+| Dsim    | S       | 20-10 | 60   | 1    | 150(100)     | 26.6M  | Dsim\_S\_t20-10\_g60\_r1.fq.gz  |
+| Dsim    | S       | 20-10 | 60   | 3    | 150(100)     | 24.5M  | Dsim\_S\_t20-10\_g60\_r3.fq.gz  |
+| Dsim    | S       | 20-10 | 60   | 5    | 150(100)     | 66M    | Dsim\_S\_t20-10\_g60\_r5.fq.gz  |
+| Dsim    | S       | 20-10 | 70   | 1    | 150(100)     | 79.7M  | Dsim\_S\_t20-10\_g70\_r1.fq.gz  |
+| Dsim    | S       | 20-10 | 70   | 3    | 150(100)     | 90.7M  | Dsim\_S\_t20-10\_g70\_r3.fq.gz  |
+| Dsim    | S       | 20-10 | 70   | 5    | 150(100)     | 101.2M | Dsim\_S\_t20-10\_g70\_r5.fq.gz  |
+| Dsim    | S       | 20-10 | 80   | 1    | 150(100)     | 69.3M  | Dsim\_S\_t20-10\_g80\_r1.fq.gz  |
+| Dsim    | S       | 20-10 | 80   | 3    | 150(100)     | 74.8M  | Dsim\_S\_t20-10\_g80\_r3.fq.gz  |
+| Dsim    | S       | 20-10 | 80   | 5    | 150(100)     | 84.9M  | Dsim\_S\_t20-10\_g80\_r5.fq.gz  |
+| Dsim    | S       | 20-10 | 90   | 1    | 150(100)     | 79.9M  | Dsim\_S\_t20-10\_g90\_r1.fq.gz  |
+| Dsim    | S       | 20-10 | 90   | 3    | 150(100)     | 84M    | Dsim\_S\_t20-10\_g90\_r3.fq.gz  |
+| Dsim    | S       | 20-10 | 90   | 5    | 150(100)     | 80.1M  | Dsim\_S\_t20-10\_g90\_r5.fq.gz  |
+| Dsim    | S       | 28-18 | 10   | 1    | 100(100)     | 68.2M  | Dsim\_S\_t28-18\_g10\_r1.fq.gz  |
+| Dsim    | S       | 28-18 | 10   | 3    | 100(100)     | 54M    | Dsim\_S\_t28-18\_g10\_r3.fq.gz  |
+| Dsim    | S       | 28-18 | 10   | 5    | 100(100)     | 89.4M  | Dsim\_S\_t28-18\_g10\_r5.fq.gz  |
+| Dsim    | S       | 28-18 | 20   | 1    | 100(100)     | 175.9M | Dsim\_S\_t28-18\_g20\_r1.fq.gz  |
+| Dsim    | S       | 28-18 | 20   | 3    | 100(100)     | 170M   | Dsim\_S\_t28-18\_g20\_r3.fq.gz  |
+| Dsim    | S       | 28-18 | 20   | 5    | 100(100)     | 158.1M | Dsim\_S\_t28-18\_g20\_r5.fq.gz  |
+| Dsim    | S       | 28-18 | 30   | 1    | 100(100)     | 81.5M  | Dsim\_S\_t28-18\_g30\_r1.fq.gz  |
+| Dsim    | S       | 28-18 | 30   | 3    | 100(100)     | 73.1M  | Dsim\_S\_t28-18\_g30\_r3.fq.gz  |
+| Dsim    | S       | 28-18 | 30   | 5    | 100(100)     | 44.4M  | Dsim\_S\_t28-18\_g30\_r5.fq.gz  |
+| Dsim    | S       | 28-18 | 40   | 1    | 100(100)     | 117.9M | Dsim\_S\_t28-18\_g40\_r1.fq.gz  |
+| Dsim    | S       | 28-18 | 40   | 3    | 100(100)     | 151.7M | Dsim\_S\_t28-18\_g40\_r3.fq.gz  |
+| Dsim    | S       | 28-18 | 40   | 5    | 100(100)     | 100.8M | Dsim\_S\_t28-18\_g40\_r5.fq.gz  |
+| Dsim    | S       | 28-18 | 50   | 1    | 100(100)     | 58.7M  | Dsim\_S\_t28-18\_g50\_r1.fq.gz  |
+| Dsim    | S       | 28-18 | 50   | 3    | 100(100)     | 60M    | Dsim\_S\_t28-18\_g50\_r3.fq.gz  |
+| Dsim    | S       | 28-18 | 50   | 5    | 100(100)     | 72.9M  | Dsim\_S\_t28-18\_g50\_r5.fq.gz  |
+| Dsim    | S       | 28-18 | 60   | 1    | 100(100)     | 97.3M  | Dsim\_S\_t28-18\_g60\_r1.fq.gz  |
+| Dsim    | S       | 28-18 | 60   | 3    | 100(100)     | 55.9M  | Dsim\_S\_t28-18\_g60\_r3.fq.gz  |
+| Dsim    | S       | 28-18 | 60   | 5    | 100(100)     | 63.1M  | Dsim\_S\_t28-18\_g60\_r5.fq.gz  |
+| Dsim    | S       |   X   | 0    | 1    | 100(100)     | 147.1M | Dsim\_S\_tX\_g0\_r1.fq.gz       |
+| Dsim    | S       |   X   | 0    | 3    | 100(100)     | 211.7M | Dsim\_S\_tX\_g0\_r3.fq.gz       |
+| Dsim    | S       |   X   | 0    | 5    | 100(100)     | 244.2M | Dsim\_S\_tX\_g0\_r5.fq.gz       |
 
 ``` r
 write.table(tr,"/Volumes/Temp2/filip/2040A/results/overview/samples/final-overview.txt",quote=FALSE,sep="\t",row.names = FALSE)

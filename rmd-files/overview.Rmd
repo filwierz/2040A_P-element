@@ -74,9 +74,11 @@ names(t)<-c("species","variant","temp.","gen.","rep.","rl.(trimmed)","file")
 r<-read.table("/Volumes/Temp2/filip/2040A/results/overview/samples/readcounts.txt")
 names(r)<-c("rc","file")
 r$rc<-paste (round(r$rc/1000000,1),"M",sep = "")
+names(r)<-c("rc.","file")
 
 tr<-merge(r,t,by="file")
-knitr::kable(t)
+tr<-subset(tr,select=c("species","variant","temp.","gen.","rep.","rl.(trimmed)","rc.","file"))
+knitr::kable(tr)
 write.table(tr,"/Volumes/Temp2/filip/2040A/results/overview/samples/final-overview.txt",quote=FALSE,sep="\t",row.names = FALSE)
 
 
