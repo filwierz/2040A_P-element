@@ -9,31 +9,76 @@ output: rmarkdown::github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
+Documentation of the processing steps in the command line
 ```{bash,eval=FALSE}
 #strain data:
-awk '{print $1}' SRR8247551.sra.fastq|paste - - - -|awk 'length($2)==140'|tr "\t" "\n"|gzip -c > wXD1.fq.gz
+awk '{print $1}' SRR8247551.sra.fastq|paste - - - -|awk 'length($2)==140'|tr "\t" "\n"|gzip -c > wXD1.fq.gz #this dataset has mixed length, keep only 140nt reads
 for i in *1_mod.fastq.gz;do n=${i%_1_mod.fastq.gz};gzip -cd ${i} ${n}_2_mod.fastq.gz|gzip -c > ../${n}.fq.gz;done #merging PE data into 1 file
 for i in *gz;do gzip -cd $i|awk '{print $1}'|cut -c-100|gzip -c > trimmed/${i};done #trims the fastq file to 100bp
-
-
 
 #divyas data:
 cd /Volumes/Temp2/filip/2040A/data/divya
 for i in *_1.fq.gz;do n=${i%_1.fq.gz}; gzip -cd ${i} ${n}_2.fq.gz|gzip -c > merged_PE/${n}.fq.gz ;done #merging PE data into 1 file
-
-for i in *gz;do n=${i#*sim_};n=${n/G/g};n=${n/R/r};n=${n/_*_/_};echo $n;done
-
+for i in *gz;do n=${i#*sim_};n=${n/G/g};n=${n/R/r};n=${n%.fq.gz};n=${n%_*};n=${n/naive/r1g0};r=${n%g*};g=${n#*g};mv $i Dsim_M_t25_g${g}_${r}.fq.gz;done #renaming files
+for i in *gz;do gzip -cd $i|awk '{print $1}'|cut -c-100|gzip -c > trimmed/${i};done #trims the fastq file to 100bp
 
 #roberts data:
 cd /Volumes/Temp2/filip/2040A/data/hotcold
-for i in *gz;do n=${i/hot/t28-18_g};n=${n/cold/t20-10_g};n=${n/base/tX_g0};mv $i Dsim_S_${n};done
+for i in *gz;do n=${i/hot/t28-18_g};n=${n/cold/t20-10_g};n=${n/base/tX_g0};mv $i Dsim_S_${n};done #renaming files
+
+#pool all files into 1 directory:
+cd /Volumes/Temp2/filip/2040A/data/divya/merged_PE/trimmed
+for i in *gz;do ln -s /Volumes/Temp2/filip/2040A/data/divya/merged_PE/trimmed/${i} /Volumes/Temp2/filip/2040A/data/pool/${i};done
+cd /Volumes/Temp2/filip/2040A/data/hotcold/
+for i in *gz;do ln -s /Volumes/Temp2/filip/2040A/data/hotcold/${i} /Volumes/Temp2/filip/2040A/data/pool/${i};done
+cd /Volumes/Temp2/filip/2040A/data/filip/
+for i in *gz;do ln -s /Volumes/Temp2/filip/2040A/data/filip/${i} /Volumes/Temp2/filip/2040A/data/pool/${i};done
 
 
+#overview table:
+cd /Volumes/Temp2/filip/2040A/data/pool
+#basis:
+for i in *gz;do echo ${i%.fq.gz}|awk -F "_" -v a="$i" '{print $1,$2,$3,$4,$5,a}';done|sort -k6,6 > /Volumes/Temp2/filip/2040A/results/overview/samples/sampleIDs.txt 
+##trimmed read length:
+for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}';done|sort -k2,2 > /Volumes/Temp2/filip/2040A/results/overview/samples/trimmedRLs.txt
+##read length:
+cd /Volumes/Temp2/filip/2040A/data/filip
+for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-filip.txt
+cd /Volumes/Temp2/filip/2040A/data/divya/merged_PE
+for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-divya.txt
+cd /Volumes/Temp2/filip/2040A/data/hotcold
+for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-robert.txt #required manual editing based on table S1 from  https://doi.org/10.1093/molbev/msac141 since data is trimmed already
 
+##merging files:
+cd /Volumes/Temp2/filip/2040A/results/overview/samples
+cat origRLs-*|sort -k2,2 > originalRLs.txt
+join -1 2 -2 2 originalRLs.txt trimmedRLs.txt|awk '{print $2"("$3")",$1}' > RLs.txt
+join -1 6 -2 2 sampleIDs.txt RLs.txt|awk '{print $2,$3,$4,$5,$6,$7,$1}' > overview.forR
+for i in *.gz;do gzip -cd $i|paste - - - -|wc -l|awk -v a="$i" '{print $1,a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/readcounts.txt
 
+#quality check
+fastqc -o /Volumes/Temp2/filip/2040A/results/overview/fastqc -d /Volumes/Temp2/filip/2040A/results/overview/fastqc/temp -t 10 Dmel_M_t25_g34_r1.fq.gz Dmel_M_t25_g34_r2.fq.gz Dmel_S_t25_g34_r1.fq.gz Dmel_S_t25_g34_r2.fq.gz Dsim_M_t25_g0_r1.fq.gz Dsim_M_t25_g10_r2.fq.gz Dsim_M_t25_g10_r3.fq.gz Dsim_M_t25_g10_r4.fq.gz Dsim_M_t25_g1_r2.fq.gz Dsim_M_t25_g1_r3.fq.gz Dsim_M_t25_g1_r4.fq.gz Dsim_M_t25_g20_r2.fq.gz Dsim_M_t25_g20_r3.fq.gz Dsim_M_t25_g20_r4.fq.gz Dsim_M_t25_g34_r2.fq.gz Dsim_M_t25_g34_r3.fq.gz Dsim_M_t25_g34_r4.fq.gz Dsim_M_t25_g40_r2.fq.gz Dsim_M_t25_g40_r3.fq.gz Dsim_M_t25_g40_r4.fq.gz Dsim_M_t25_g48_r2.fq.gz Dsim_M_t25_g48_r3.fq.gz Dsim_M_t25_g48_r4.fq.gz Dsim_M_t25_g63_r2.fq.gz Dsim_M_t25_g63_r3.fq.gz Dsim_M_t25_g63_r4.fq.gz Dsim_S_t20-10_g100_r1.fq.gz Dsim_S_t20-10_g100_r3.fq.gz Dsim_S_t20-10_g100_r5.fq.gz Dsim_S_t20-10_g10_r1.fq.gz Dsim_S_t20-10_g10_r3.fq.gz Dsim_S_t20-10_g10_r5.fq.gz Dsim_S_t20-10_g20_r1.fq.gz Dsim_S_t20-10_g20_r3.fq.gz Dsim_S_t20-10_g20_r5.fq.gz Dsim_S_t20-10_g30_r1.fq.gz Dsim_S_t20-10_g30_r3.fq.gz Dsim_S_t20-10_g30_r5.fq.gz Dsim_S_t20-10_g40_r1.fq.gz Dsim_S_t20-10_g40_r3.fq.gz Dsim_S_t20-10_g40_r5.fq.gz Dsim_S_t20-10_g50_r1.fq.gz Dsim_S_t20-10_g50_r3.fq.gz Dsim_S_t20-10_g50_r5.fq.gz Dsim_S_t20-10_g60_r1.fq.gz Dsim_S_t20-10_g60_r3.fq.gz Dsim_S_t20-10_g60_r5.fq.gz Dsim_S_t20-10_g70_r1.fq.gz Dsim_S_t20-10_g70_r3.fq.gz Dsim_S_t20-10_g70_r5.fq.gz Dsim_S_t20-10_g80_r1.fq.gz Dsim_S_t20-10_g80_r3.fq.gz Dsim_S_t20-10_g80_r5.fq.gz Dsim_S_t20-10_g90_r1.fq.gz Dsim_S_t20-10_g90_r3.fq.gz Dsim_S_t20-10_g90_r5.fq.gz Dsim_S_t28-18_g10_r1.fq.gz Dsim_S_t28-18_g10_r3.fq.gz Dsim_S_t28-18_g10_r5.fq.gz Dsim_S_t28-18_g20_r1.fq.gz Dsim_S_t28-18_g20_r3.fq.gz Dsim_S_t28-18_g20_r5.fq.gz Dsim_S_t28-18_g30_r1.fq.gz Dsim_S_t28-18_g30_r3.fq.gz Dsim_S_t28-18_g30_r5.fq.gz Dsim_S_t28-18_g40_r1.fq.gz Dsim_S_t28-18_g40_r3.fq.gz Dsim_S_t28-18_g40_r5.fq.gz Dsim_S_t28-18_g50_r1.fq.gz Dsim_S_t28-18_g50_r3.fq.gz Dsim_S_t28-18_g50_r5.fq.gz Dsim_S_t28-18_g60_r1.fq.gz Dsim_S_t28-18_g60_r3.fq.gz Dsim_S_t28-18_g60_r5.fq.gz Dsim_S_tX_g0_r1.fq.gz Dsim_S_tX_g0_r3.fq.gz Dsim_S_tX_g0_r5.fq.gz
 
 
 ```
 
+Generating the final table
+```{r, eval=TRUE}
+
+t<-read.table("/Volumes/Temp2/filip/2040A/results/overview/samples/overview.forR")
+t$V3<-gsub("t","",as.character(t$V3))
+t$V4<-gsub("g","",as.character(t$V4))
+t$V5<-gsub("r","",as.character(t$V5))
+names(t)<-c("species","variant","temp.","gen.","rep.","rl.(trimmed)","file")
+
+r<-read.table("/Volumes/Temp2/filip/2040A/results/overview/samples/readcounts.txt")
+names(r)<-c("rc","file")
+r$rc<-paste (round(r$rc/1000000,1),"M",sep = "")
+
+tr<-merge(r,t,by="file")
+knitr::kable(t)
+write.table(tr,"/Volumes/Temp2/filip/2040A/results/overview/samples/final-overview.txt",quote=FALSE,sep="\t",row.names = FALSE)
+
+
+```
 
