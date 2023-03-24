@@ -73,7 +73,7 @@ names(t)<-c("species","variant","temp.","gen.","rep.","rl.(trimmed)","file")
 
 r<-read.table("/Volumes/Temp2/filip/2040A/results/overview/samples/readcounts.txt")
 names(r)<-c("rc","file")
-r$rc<-paste (round(r$rc/1000000,1),"M",sep = "")
+r$rc<-paste(round(r$rc/1000000,1),"M",sep = "")
 names(r)<-c("rc.","file")
 
 tr<-merge(r,t,by="file")
