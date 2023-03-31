@@ -106,6 +106,10 @@ for line in args.file:
 
     if rSNP=="XYZ" or nrSNP=="XYZ":
         continue
+    if len(rs) != 3:
+        continue
+    if len(ns) != 3:
+        continue
     if len(set(rs)) != 1:
         continue
     if len(set(ns)) != 1:
