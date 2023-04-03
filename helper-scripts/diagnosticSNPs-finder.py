@@ -47,7 +47,6 @@ n1,n2,n3=[int(i) for i in n]
 #reference character if provided to samtools
 #column>3: A-count:T-count:C-count:G-count:N-count:deletion-count
 
-ptopr=collections.defaultdict((lambda:collections.defaultdict(lambda:[0,0])))
 
 for line in args.file:
     line=line.rstrip("\n")
