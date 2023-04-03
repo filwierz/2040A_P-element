@@ -56,7 +56,7 @@ for line in args.file:
     pos=int(a[1])
 
     rSNP="XYZ"
-    nRSNP="XYZ"
+    nrSNP="XYZ"
 
     rs=[]
     ns=[]
@@ -117,8 +117,7 @@ for line in args.file:
 
     if (rSNP!=nrSNP):
         print(chro,pos,rSNP,nrSNP)
-    else:
-        print("error", chro,pos)
+
     
 
 
