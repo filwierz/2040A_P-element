@@ -117,6 +117,9 @@ for line in args.file:
 
     if (rSNP!=nrSNP):
         print(chro,pos,rSNP,nrSNP)
+    else:
+        print("error", chro,pos)
+    
 
 
 
