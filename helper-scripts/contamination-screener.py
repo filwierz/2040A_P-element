@@ -46,13 +46,13 @@ for line in args.file:
     cov=A+T+C+G
     if(cov<mcov):
         continue
-    elif (A/cov==1):
+    elif (A/cov>=0.99):
         toit[chro][pos][0]="A"
-    elif (T/cov==1):
+    elif (T/cov>=0.99):
         toit[chro][pos][0]="T"
-    elif (C/cov==1):
+    elif (C/cov>=0.99):
         toit[chro][pos][0]="C"
-    elif (G/cov==1):
+    elif (G/cov>=0.99):
         toit[chro][pos][0]="G"
     else:
         toit[chro][pos][0]="NA"
