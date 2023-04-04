@@ -9,7 +9,7 @@ import collections
 parser = argparse.ArgumentParser(description="""           
 Description
 -----------
-    finds diagnostic SNPs from a sync file generated from samtools' pileup file with the script mpileup2sync.jar (can be found here: https://sourceforge.net/projects/popoolation2/)""",formatter_class=argparse.RawDescriptionHelpFormatter,
+    screens samples for diagnostic SNPs from a sync file generated from samtools' pileup file with the script mpileup2sync.jar (can be found here: https://sourceforge.net/projects/popoolation2/)""",formatter_class=argparse.RawDescriptionHelpFormatter,
 epilog="""
 
 Author
@@ -20,6 +20,7 @@ Prerequisites
 -------------
     python version 3+
     for input samtools and mpileup2sync.jar from popoolation2
+    diagnostic SNPs from diagnosticSNPs-finder.py
 
 """)
 
