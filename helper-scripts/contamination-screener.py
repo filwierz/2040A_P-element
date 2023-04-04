@@ -31,7 +31,6 @@ args = parser.parse_args()
 mcov=args.mincoverage
 
 toit=collections.defaultdict((lambda:collections.defaultdict(lambda:[str])))
-#snp=collections.defaultdict((lambda:collections.defaultdict(lambda:[str,str])))
 
 for line in args.file:
     ##Dmel_rhi	2	N	0:0:0:0:0:0	
@@ -75,14 +74,5 @@ for line in args.diasnp:
                     elif alt==ch[0]:
                         print(chro,pos,ref,alt,ch[0],"contamination")
                     else:
-                        print(chro,pos,ref,alt,ch[0],"problem")
-
-
-
-
-
-
- 
-
-
+                        print(chro,pos,ref,alt,ch[0],"error/polymorph")
 
