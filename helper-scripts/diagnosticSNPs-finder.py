@@ -36,8 +36,8 @@ mcov=args.mincoverage
 s=sIDs.split(",")
 n=nsIDs.split(",")
 
-s1,s2,s3=[int(i) for i in s]
-n1,n2,n3=[int(i) for i in n]
+s1,s2,s3,s4=[int(i) for i in s]
+n1,n2,n3,n4=[int(i) for i in n]
 
 ##note:
 #../Canton-S.sort.bam ../Iso1.sort.bam ../Oregon-R.sort.bam Mod6.sort.bam.....
@@ -60,7 +60,7 @@ for line in args.file:
     rs=[]
     ns=[]
 
-    for i in s1,s2,s3:
+    for i in s1,s2,s3,s4:
         j=i+2
         if(a[j]=="0:0:0:0:0:0"):
             break
@@ -82,7 +82,7 @@ for line in args.file:
         rs.append(rSNP)
     
 
-    for i in n1,n2,n3:
+    for i in n1,n2,n3,n4:
         j=i+2
         if(a[j]=="0:0:0:0:0:0"):
             break
@@ -105,9 +105,9 @@ for line in args.file:
 
     if rSNP=="XYZ" or nrSNP=="XYZ":
         continue
-    if len(rs) != 3:
+    if len(rs) != 4:
         continue
-    if len(ns) != 3:
+    if len(ns) != 4:
         continue
     if len(set(rs)) != 1:
         continue
