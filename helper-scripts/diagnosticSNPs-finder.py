@@ -54,13 +54,11 @@ for line in args.file:
     chro=a[0]
     pos=int(a[1])
 
-    rSNP="XYZ"
-    nrSNP="XYZ"
-
     rs=[]
     ns=[]
 
     for i in s1,s2,s3,s4:
+        rSNP="XYZ"
         j=i+2
         if(a[j]=="0:0:0:0:0:0"):
             break
@@ -73,16 +71,17 @@ for line in args.file:
             break
         if (A/cov==1):
             rSNP="A"
-        if (T/cov==1):
+        elif (T/cov==1):
             rSNP="T"
-        if (C/cov==1):
+        elif (C/cov==1):
             rSNP="C"
-        if (G/cov==1):
+        elif (G/cov==1):
             rSNP="G"
         rs.append(rSNP)
     
 
     for i in n1,n2,n3,n4:
+        nrSNP="XYZ"
         j=i+2
         if(a[j]=="0:0:0:0:0:0"):
             break
@@ -95,11 +94,11 @@ for line in args.file:
             break
         if (A/cov==1):
             nrSNP="A"
-        if (T/cov==1):
+        elif (T/cov==1):
             nrSNP="T"
-        if (C/cov==1):
+        elif (C/cov==1):
             nrSNP="C"
-        if (G/cov==1):
+        elif (G/cov==1):
             nrSNP="G"
         ns.append(nrSNP)
 
