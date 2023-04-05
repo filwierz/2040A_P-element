@@ -1,0 +1,71 @@
+---
+title: "diagnostic_SNPs"
+author: "Filip Wierzbicki"
+date: "4/5/2023"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{bash,eval=FALSE}
+cd /Volumes/Temp2/filip/2040A/data/strains/Dsim/trimmed
+nohup sh -c 'for i in *.fq.gz;do n=${i%.fq.gz};bwa bwasw -t 10 /Volumes/Temp2/filip/2040A/ref/scg-only/Dsim_3scg.fasta $i|samtools sort -@ 4 -m 3G - > /Volumes/Temp2/filip/2040A/map/3scg-only/${n}.sort.bam;done' &
+cd /Volumes/Temp2/filip/2040A/data/strains/Dmel/trimmed
+nohup sh -c 'for i in *.fq.gz;do n=${i%.fq.gz};bwa bwasw -t 10 /Volumes/Temp2/filip/2040A/ref/scg-only/Dmel_3scg.fasta $i|samtools sort -@ 4 -m 3G - > /Volumes/Temp2/filip/2040A/map/3scg-only/${n}.sort.bam;done' &
+
+##cross-map
+cd /Volumes/Temp2/filip/2040A/data/strains/Dsim/trimmed
+nohup sh -c 'for i in *.fq.gz;do n=${i%.fq.gz};bwa bwasw -t 10 /Volumes/Temp2/filip/2040A/ref/scg-only/Dmel_3scg.fasta $i|samtools sort -@ 4 -m 3G - > /Volumes/Temp2/filip/2040A/map/3scg-only/cross-map/${n}.sort.bam;done' &
+cd /Volumes/Temp2/filip/2040A/data/strains/Dmel/trimmed
+nohup sh -c 'for i in *.fq.gz;do n=${i%.fq.gz};bwa bwasw -t 10 /Volumes/Temp2/filip/2040A/ref/scg-only/Dsim_3scg.fasta $i|samtools sort -@ 4 -m 3G - > /Volumes/Temp2/filip/2040A/map/3scg-only/cross-map/${n}.sort.bam;done' &
+
+
+##need to include population data because to many segregating SNPs:
+###from https://doi.org/10.1371/journal.pgen.1005406
+#ERR557065: http://ftp.sra.ebi.ac.uk/vol1/run/ERR557/ERR557065/DsimVPG-PCRfreec-rep2.sort.bam
+#ERR557050: http://ftp.sra.ebi.ac.uk/vol1/run/ERR557/ERR557050/Dmel-PCRfree-rep1.sort.bam	
+cd /Volumes/Temp2/filip/2040A/data/populations
+samtools view Dmel-PCRfree-rep1.sort.bam|awk '{print "@"$1;print $10;print "+"$1;print $11}' > fastq/Dmel.fastq
+samtools view DsimVPG-PCRfreec-rep2.sort.bam|awk '{print "@"$1;print $10;print "+"$1;print $11}' > fastq/Dsim.fastq
+cd fastq
+bwa bwasw -t 10 /Volumes/Temp2/filip/2040A/ref/scg-only/Dsim_3scg.fasta Dsim.fastq|samtools sort -@ 4 -m 3G - > /Volumes/Temp2/filip/2040A/map/3scg-only/Dsim.sort.bam
+bwa bwasw -t 10 /Volumes/Temp2/filip/2040A/ref/scg-only/Dmel_3scg.fasta Dmel.fastq|samtools sort -@ 4 -m 3G - > /Volumes/Temp2/filip/2040A/map/3scg-only/Dmel.sort.bam
+
+##cross-map
+bwa bwasw -t 10 /Volumes/Temp2/filip/2040A/ref/scg-only/Dmel_3scg.fasta Dsim.fastq|samtools sort -@ 4 -m 3G - > /Volumes/Temp2/filip/2040A/map/3scg-only/cross-map/Dsim.sort.bam
+bwa bwasw -t 10 /Volumes/Temp2/filip/2040A/ref/scg-only/Dsim_3scg.fasta Dmel.fastq|samtools sort -@ 4 -m 3G - > /Volumes/Temp2/filip/2040A/map/3scg-only/cross-map/Dmel.sort.bam
+
+#dmel-ref:
+cd /Volumes/Temp2/filip/2040A/map/3scg-only/cross-map
+nohup samtools mpileup -q 20 ../Canton-S.sort.bam ../Iso1.sort.bam ../Oregon-R.sort.bam ../Dmel.sort.bam Mod6.sort.bam w501.sort.bam wXD1.sort.bam Dsim.sort.bam -o /Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/withPop_Dmel-scg.mpileup &
+cd /Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/
+java -ea -Xmx7g -jar /Volumes/Temp3/filip/programs/popoolation2_1201/mpileup2sync.jar --input withPop_Dmel-scg.mpileup --output withPop_Dmel-scg.sync --fastq-type sanger --min-qual 20 --threads 8
+
+python /Volumes/Temp2/filip/2040A/programs/2040A_P-element/helper-scripts/diagnosticSNPs-finder.py --sync withPop_Dmel-scg.sync --selfIDs 1,2,3,4 --nonselfIDs 5,6,7,8 --min-cov 5 > withPop_Dmel-scg.SNPs
+
+#dsim-ref:
+cd /Volumes/Temp2/filip/2040A/map/3scg-only/cross-map
+nohup samtools mpileup -q 20 ../Mod6.sort.bam ../w501.sort.bam ../wXD1.sort.bam ../Dsim.sort.bam Canton-S.sort.bam Iso1.sort.bam Oregon-R.sort.bam Dmel.sort.bam -o /Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/withPop_Dsim-scg.mpileup &
+cd /Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/
+java -ea -Xmx7g -jar /Volumes/Temp3/filip/programs/popoolation2_1201/mpileup2sync.jar --input withPop_Dsim-scg.mpileup --output withPop_Dsim-scg.sync --fastq-type sanger --min-qual 20 --threads 8
+
+python /Volumes/Temp2/filip/2040A/programs/2040A_P-element/helper-scripts/diagnosticSNPs-finder.py --sync withPop_Dsim-scg.sync --selfIDs 1,2,3,4 --nonselfIDs 5,6,7,8 --min-cov 5 > withPop_Dsim-scg.SNPs
+
+```
+
+Dmel genes
+```{R,eval=TRUE}
+m<-read.table("/Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/withPop_Dmel-scg.SNPs")
+names(m)<-c("gene","position","Dmel-variant","Dsim-variant")
+knitr::kable(m)
+```
+
+Dsim genes
+```{R,eval=TRUE}
+
+s<-read.table("/Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/withPop_Dsim-scg.SNPs")
+names(m)<-c("gene","position","Dsim-variant","Dmel-variant")
+knitr::kable(s)
+```
