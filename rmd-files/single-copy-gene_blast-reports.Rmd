@@ -9,10 +9,10 @@ output: rmarkdown::github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-![](/Volumes/Temp2/filip/2040A/results/blast-screenshots/Dmel_rhi.png)
-![](/Volumes/Temp2/filip/2040A/results/blast-screenshots/Dmel_rpl32.png)
-![](/Volumes/Temp2/filip/2040A/results/blast-screenshots/Dmel_tj.png)
-![](/Volumes/Temp2/filip/2040A/results/blast-screenshots/Dsim_rhi.png)
-![](/Volumes/Temp2/filip/2040A/results/blast-screenshots/Dsim_rpl32.png)
-![](/Volumes/Temp2/filip/2040A/results/blast-screenshots/Dsim_tj.png)
+![](blast-screenshots/Dmel_rhi.png)
+![](blast-screenshots/Dmel_rpl32.png)
+![](blast-screenshots/Dmel_tj.png)
+![](blast-screenshots/Dsim_rhi.png)
+![](blast-screenshots/Dsim_rpl32.png)
+![](blast-screenshots/Dsim_tj.png)
 
