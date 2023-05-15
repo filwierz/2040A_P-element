@@ -12,6 +12,7 @@ nohup sh -c 'for i in Dsim_*;do n=${i%.fq.gz};bwa bwasw -t 10 /Volumes/Temp2/fil
 
 #analysis:
 cd /Volumes/Temp2/filip/2040A/map/TEs_3scg
+conda activate deviaTE_env
 for i in *bam;do ln -s /Volumes/Temp2/filip/2040A/map/TEs_3scg/${i} /Volumes/Temp2/filip/2040A/results/deviate/${i};done
 cd /Volumes/Temp2/filip/2040A/results/deviate
 for i in *bam;do samtools index $i;done
@@ -28,6 +29,8 @@ for i in *PPI251;do awk '$2=="insertions/haploid:"' $i|awk -v a="$i" '{print $3,
 library(ggplot2)
 
 t<-read.table("/Volumes/Temp2/filip/2040A/results/deviate/forR/PPI241-copynr.forR")
+t2<-read.table("/Volumes/Temp2/filip/2040A/results/deviate/batch2/forR/PPI251-copynr.forR")
+t<-rbind(t,t2)
 names(t)<-c("copies","species","variant","temperature","generation","replicate")
 t$type<-paste(t$temperature,t$variant,t$species,sep="_")
 
@@ -40,8 +43,8 @@ baho<-base
 baho$temperature<-c("t28-18")
 baho$type<-paste(baho$temperature,baho$variant,baho$species,sep="_")
 
-t<-subset(t,type!="t25_M_Dmel")
-t<-subset(t,type!="t25_S_Dmel")
+#t<-subset(t,type!="t25_M_Dmel")
+#t<-subset(t,type!="t25_S_Dmel")
 t<-subset(t,type!="tX_S_Dsim")
 
 t<-rbind(baco,baho,t)
