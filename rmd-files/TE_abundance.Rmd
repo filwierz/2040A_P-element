@@ -40,6 +40,7 @@ nohup sh -c 'for i in *bam;do deviaTE_analyse --input $i --single_copy_genes Dme
 ```{R,eval=TRUE}
 
 library(ggplot2)
+library(dplyr)
 
 t<-read.table("/Volumes/Temp2/filip/2040A/results/deviate/forR/PPI241-copynr.forR")
 t2<-read.table("/Volumes/Temp2/filip/2040A/results/deviate/batch2/forR/PPI251-copynr.forR")
@@ -64,8 +65,17 @@ t<-rbind(baco,baho,t)
 
 t$temperature<-gsub("t","",t$temperature)
 t$generation<-as.numeric(gsub("g","",t$generation))
+t$type1<-paste(t$replicate,t$type,sep="_")
+t$type2<-paste(t$species,t$variant,sep="_")
 
-g<-ggplot(t, aes(x=generation, y=copies,color=type,alpha=replicate)) + geom_line()+scale_alpha_discrete(range = c(0.3, 1))
+
+##consistent replicate labels
+repl<-read.table("/Volumes/Temp2/filip/2040A/ref/replicate_labels.txt")
+names(repl)<-c("id","rep")
+t$id<-paste(t$species,t$variant,t$replicate,sep="_")
+t<-left_join(t,repl,by="id")
+
+g<-ggplot(t, aes(x=generation, y=copies,color=rep,by=type)) + geom_line()+facet_wrap(~type2)#,color=type,alpha=replicate
 plot(g)
 
 #ggsave

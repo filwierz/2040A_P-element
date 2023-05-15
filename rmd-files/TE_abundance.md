@@ -23,11 +23,31 @@ nohup sh -c 'for i in Dsim*bam;do cat /Volumes/Temp2/filip/2040A/ref/TEnames.txt
 ###note that those loops are very time consuming. If this becomes a bottleneck, I can write a storm script that submits multiple commands to parallelize the process
 ##summary for the P-element:
 for i in *PPI251;do awk '$2=="insertions/haploid:"' $i|awk -v a="$i" '{print $3,a}';done|sed 's/.sort.bam.PPI251//g'|awk -F "_" '{print $1,$2,$3,$4,$5}' > forR/PPI241-copynr.forR
+#batch2:
+cd /Volumes/Temp2/filip/2040A/data/batch2/fastq
+nohup sh -c 'for i in *.fq.gz;do n=${i%.fq.gz};bwa bwasw -t 20 /Volumes/Temp2/filip/2040A/ref/TEs-scg/teseqs-3scg-dmel.fasta $i|samtools sort -@ 4 -m 3G - > /Volumes/Temp3/filip/2040A/map/TEs_3scg/batch2/${n}.sort.bam;done' &
+cat /Volumes/Temp2/filip/2040A/data/batch2/metadata_batch2.txt|while read b n;do ln -s /Volumes/Temp3/filip/2040A/map/TEs_3scg/batch2/${b}.fastq.sort.bam /Volumes/Temp2/filip/2040A/results/deviate/batch2/${n}.sort.bam;done
+/Volumes/Temp2/filip/2040A/results/deviate/batch2
+nohup sh -c 'for i in *bam;do deviaTE_analyse --input $i --single_copy_genes Dmel_tj,Dmel_rpl32,Dmel_rhi --library /Volumes/Temp2/filip/2040A/ref/TEs-scg/teseqs-3scg-dmel.fasta --family PPI251;done'&
 ```
 
 ``` r
 library(ggplot2)
+library(dplyr)
+```
 
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
 t<-read.table("/Volumes/Temp2/filip/2040A/results/deviate/forR/PPI241-copynr.forR")
 t2<-read.table("/Volumes/Temp2/filip/2040A/results/deviate/batch2/forR/PPI251-copynr.forR")
 t<-rbind(t,t2)
@@ -51,13 +71,17 @@ t<-rbind(baco,baho,t)
 
 t$temperature<-gsub("t","",t$temperature)
 t$generation<-as.numeric(gsub("g","",t$generation))
+t$type1<-paste(t$replicate,t$type,sep="_")
+t$type2<-paste(t$species,t$variant,sep="_")
 
-g<-ggplot(t, aes(x=generation, y=copies,color=type,alpha=replicate)) + geom_line()+scale_alpha_discrete(range = c(0.3, 1))
-```
 
-    ## Warning: Using alpha for a discrete variable is not advised.
+##consistent replicate labels
+repl<-read.table("/Volumes/Temp2/filip/2040A/ref/replicate_labels.txt")
+names(repl)<-c("id","rep")
+t$id<-paste(t$species,t$variant,t$replicate,sep="_")
+t<-left_join(t,repl,by="id")
 
-``` r
+g<-ggplot(t, aes(x=generation, y=copies,color=rep,by=type)) + geom_line()+facet_wrap(~type2)#,color=type,alpha=replicate
 plot(g)
 ```
 
