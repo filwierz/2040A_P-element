@@ -29,7 +29,12 @@ nohup sh -c 'for i in Dsim*bam;do cat /Volumes/Temp2/filip/2040A/ref/TEnames.txt
 ###note that those loops are very time consuming. If this becomes a bottleneck, I can write a storm script that submits multiple commands to parallelize the process
 ##summary for the P-element:
 for i in *PPI251;do awk '$2=="insertions/haploid:"' $i|awk -v a="$i" '{print $3,a}';done|sed 's/.sort.bam.PPI251//g'|awk -F "_" '{print $1,$2,$3,$4,$5}' > forR/PPI241-copynr.forR
-
+#batch2:
+cd /Volumes/Temp2/filip/2040A/data/batch2/fastq
+nohup sh -c 'for i in *.fq.gz;do n=${i%.fq.gz};bwa bwasw -t 20 /Volumes/Temp2/filip/2040A/ref/TEs-scg/teseqs-3scg-dmel.fasta $i|samtools sort -@ 4 -m 3G - > /Volumes/Temp3/filip/2040A/map/TEs_3scg/batch2/${n}.sort.bam;done' &
+cat /Volumes/Temp2/filip/2040A/data/batch2/metadata_batch2.txt|while read b n;do ln -s /Volumes/Temp3/filip/2040A/map/TEs_3scg/batch2/${b}.fastq.sort.bam /Volumes/Temp2/filip/2040A/results/deviate/batch2/${n}.sort.bam;done
+/Volumes/Temp2/filip/2040A/results/deviate/batch2
+nohup sh -c 'for i in *bam;do deviaTE_analyse --input $i --single_copy_genes Dmel_tj,Dmel_rpl32,Dmel_rhi --library /Volumes/Temp2/filip/2040A/ref/TEs-scg/teseqs-3scg-dmel.fasta --family PPI251;done'&
 ```
 
 ```{R,eval=TRUE}

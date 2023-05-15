@@ -34,6 +34,10 @@ for i in *gz;do ln -s /Volumes/Temp2/filip/2040A/data/hotcold/${i} /Volumes/Temp
 cd /Volumes/Temp2/filip/2040A/data/filip/
 for i in *gz;do ln -s /Volumes/Temp2/filip/2040A/data/filip/${i} /Volumes/Temp2/filip/2040A/data/pool/${i};done
 
+#batch2:
+cd /Volumes/Temp2/filip/2040A/data/batch2/fastq
+cat /Volumes/Temp2/filip/2040A/data/batch2/metadata_batch2.txt|while read b n;do ln -s /Volumes/Temp2/filip/2040A/data/batch2/fastq/${b}.fastq.fq.gz /Volumes/Temp2/filip/2040A/data/pool/${n}.fq.gz;done
+
 
 #overview table:
 cd /Volumes/Temp2/filip/2040A/data/pool
@@ -48,12 +52,15 @@ cd /Volumes/Temp2/filip/2040A/data/divya/merged_PE
 for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-divya.txt
 cd /Volumes/Temp2/filip/2040A/data/hotcold
 for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-robert.txt #required manual editing based on table S1 from  https://doi.org/10.1093/molbev/msac141 since data is trimmed already
+cd /Volumes/Temp2/filip/2040A/data/batch2/fastq
+for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-filip-batch2.txt
 
 ##merging files:
 cd /Volumes/Temp2/filip/2040A/results/overview/samples
 cat origRLs-*|sort -k2,2 > originalRLs.txt
 join -1 2 -2 2 originalRLs.txt trimmedRLs.txt|awk '{print $2"("$3")",$1}' > RLs.txt
 join -1 6 -2 2 sampleIDs.txt RLs.txt|awk '{print $2,$3,$4,$5,$6,$7,$1}' > overview.forR
+cd /Volumes/Temp2/filip/2040A/data/pool
 for i in *.gz;do gzip -cd $i|paste - - - -|wc -l|awk -v a="$i" '{print $1,a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/readcounts.txt
 
 #quality check
