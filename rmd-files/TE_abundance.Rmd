@@ -74,10 +74,12 @@ repl<-read.table("/Volumes/Temp2/filip/2040A/ref/replicate_labels.txt")
 names(repl)<-c("id","rep")
 t$id<-paste(t$species,t$variant,t$replicate,sep="_")
 t<-left_join(t,repl,by="id")
-
-g<-ggplot(t, aes(x=generation, y=copies,color=rep,by=type)) + geom_line()+facet_wrap(~type2)#,color=type,alpha=replicate
+cols <- c("20-10"="#3393FF", "28-18"="#FF3333", "25"="#10CB40")
+g<-ggplot(t, aes(x=generation, y=copies,color=temperature,by=type1)) + geom_line()+facet_grid(variant ~ species,scales="free")+ylab("insertions per haploid") +scale_color_manual(values = cols)
 plot(g)
 
-#ggsave
+ggsave("/Volumes/Temp2/filip/2040A/results/figures/invasion_dynamics.pdf",width=8,height=6)
+ggsave("/Volumes/Temp2/filip/2040A/results/figures/invasion_dynamics.png",width=8,height=6)
+
 
 ```
