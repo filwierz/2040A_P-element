@@ -1,0 +1,63 @@
+---
+title: "PCA P-element"
+output: rmarkdown::github_document
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_knit$set(root.dir = '/Users/rpianezza/TE/')
+```
+
+This script is adapted from Riccardos script (Original script: https://github.com/Almo96/dmel_TE_invasions/tree/main/PCA-UMAP, last accession May 17, 2023)
+
+
+```{bash,eval=FALSE}
+cd /Volumes/Temp2/filip/2040A/PCA
+python test.py --min-freq 0 --min-count 0 ppi251 forR
+```
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+
+theme_set(theme_bw())
+
+#full_meta <- read_tsv("/Volumes/Temp3/filip/programs/dmel_TE_invasions/dataset-metadata")
+full_meta <- read_tsv("/Volumes/Temp2/filip/2040A/ref/metadata-GDL_1dsim")
+
+meta <- full_meta %>% select(run_accession, location, study, estimated_year) %>% rename(ID = "run_accession")
+
+meta %>% group_by(location) %>% summarise(count = n())
+#meta %>% filter(study=="gdl") %>% group_by(location) %>% summarise(count = n())
+```
+
+## PCA function
+
+```{r}
+PCA <- function(af, metadata, titlee){
+  
+  #full_dataset <- inner_join(metadata, af, by="ID") %>% distinct() %>% type_convert() %>% filter(study=="gdl")
+  full_dataset <- inner_join(metadata, af, by="ID") %>% distinct() %>% type_convert() 
+  pcaable <- full_dataset %>% select_if(~ !all(. == .[1]))
+  pca_result <- prcomp(pcaable[, -c(1:4)], center = TRUE, scale = TRUE)
+  var_explained <- pca_result$sdev^2/sum(pca_result$sdev^2)
+  
+  plot <- ggplot(data.frame(pca_result$x, ID=full_dataset$ID, location=full_dataset$location, year=full_dataset$estimated_year, study=full_dataset$study), aes(x=PC1,y=PC2, color=location)) + geom_point(aes(size = study)) + labs(x=paste0("PC1: ",round(var_explained[1]*100,1),"%"), y=paste0("PC2: ",round(var_explained[2]*100,1),"%"), color="Location") + ggtitle(titlee) + theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.title = element_text(face = "bold"))
+plot
+}
+
+```
+
+
+PPI251
+```{r PPI251}
+(PPI251 <- read_tsv("/Volumes/Temp2/filip/2040A/PCA/forR.PCAable"))
+PPI251$ID <- str_remove(PPI251$ID, "\\.cleaned$")
+PCA(PPI251, meta, "PPI251")
+ggsave("/Volumes/Temp2/filip/2040A/PCA/figures/PCA_GDL.pdf",width=9,height=6)
+ggsave("/Volumes/Temp2/filip/2040A/PCA/figures/PCA_GDL.png",width=9,height=6)
+```
+
