@@ -29,6 +29,10 @@ for i in *gz;do ln -s /Volumes/Temp2/filip/2040A/data/hotcold/${i} /Volumes/Temp
 cd /Volumes/Temp2/filip/2040A/data/filip/
 for i in *gz;do ln -s /Volumes/Temp2/filip/2040A/data/filip/${i} /Volumes/Temp2/filip/2040A/data/pool/${i};done
 
+#batch2:
+cd /Volumes/Temp2/filip/2040A/data/batch2/fastq
+cat /Volumes/Temp2/filip/2040A/data/batch2/metadata_batch2.txt|while read b n;do ln -s /Volumes/Temp2/filip/2040A/data/batch2/fastq/${b}.fastq.fq.gz /Volumes/Temp2/filip/2040A/data/pool/${n}.fq.gz;done
+
 
 #overview table:
 cd /Volumes/Temp2/filip/2040A/data/pool
@@ -43,16 +47,16 @@ cd /Volumes/Temp2/filip/2040A/data/divya/merged_PE
 for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-divya.txt
 cd /Volumes/Temp2/filip/2040A/data/hotcold
 for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-robert.txt #required manual editing based on table S1 from  https://doi.org/10.1093/molbev/msac141 since data is trimmed already
+cd /Volumes/Temp2/filip/2040A/data/batch2/fastq
+cat /Volumes/Temp2/filip/2040A/data/batch2/metadata_batch2.txt|while read b n; do gzip -cd ${b}.fastq.fq.gz|head -2|tail -1|awk -v a="$n" '{print length($1),a".fq.gz"}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-filip-batch2.txt
 
 ##merging files:
 cd /Volumes/Temp2/filip/2040A/results/overview/samples
 cat origRLs-*|sort -k2,2 > originalRLs.txt
 join -1 2 -2 2 originalRLs.txt trimmedRLs.txt|awk '{print $2"("$3")",$1}' > RLs.txt
 join -1 6 -2 2 sampleIDs.txt RLs.txt|awk '{print $2,$3,$4,$5,$6,$7,$1}' > overview.forR
+cd /Volumes/Temp2/filip/2040A/data/pool
 for i in *.gz;do gzip -cd $i|paste - - - -|wc -l|awk -v a="$i" '{print $1,a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/readcounts.txt
-
-#quality check
-fastqc -o /Volumes/Temp2/filip/2040A/results/overview/fastqc -d /Volumes/Temp2/filip/2040A/results/overview/fastqc/temp -t 10 Dmel_M_t25_g34_r1.fq.gz Dmel_M_t25_g34_r2.fq.gz Dmel_S_t25_g34_r1.fq.gz Dmel_S_t25_g34_r2.fq.gz Dsim_M_t25_g0_r1.fq.gz Dsim_M_t25_g10_r2.fq.gz Dsim_M_t25_g10_r3.fq.gz Dsim_M_t25_g10_r4.fq.gz Dsim_M_t25_g1_r2.fq.gz Dsim_M_t25_g1_r3.fq.gz Dsim_M_t25_g1_r4.fq.gz Dsim_M_t25_g20_r2.fq.gz Dsim_M_t25_g20_r3.fq.gz Dsim_M_t25_g20_r4.fq.gz Dsim_M_t25_g34_r2.fq.gz Dsim_M_t25_g34_r3.fq.gz Dsim_M_t25_g34_r4.fq.gz Dsim_M_t25_g40_r2.fq.gz Dsim_M_t25_g40_r3.fq.gz Dsim_M_t25_g40_r4.fq.gz Dsim_M_t25_g48_r2.fq.gz Dsim_M_t25_g48_r3.fq.gz Dsim_M_t25_g48_r4.fq.gz Dsim_M_t25_g63_r2.fq.gz Dsim_M_t25_g63_r3.fq.gz Dsim_M_t25_g63_r4.fq.gz Dsim_S_t20-10_g100_r1.fq.gz Dsim_S_t20-10_g100_r3.fq.gz Dsim_S_t20-10_g100_r5.fq.gz Dsim_S_t20-10_g10_r1.fq.gz Dsim_S_t20-10_g10_r3.fq.gz Dsim_S_t20-10_g10_r5.fq.gz Dsim_S_t20-10_g20_r1.fq.gz Dsim_S_t20-10_g20_r3.fq.gz Dsim_S_t20-10_g20_r5.fq.gz Dsim_S_t20-10_g30_r1.fq.gz Dsim_S_t20-10_g30_r3.fq.gz Dsim_S_t20-10_g30_r5.fq.gz Dsim_S_t20-10_g40_r1.fq.gz Dsim_S_t20-10_g40_r3.fq.gz Dsim_S_t20-10_g40_r5.fq.gz Dsim_S_t20-10_g50_r1.fq.gz Dsim_S_t20-10_g50_r3.fq.gz Dsim_S_t20-10_g50_r5.fq.gz Dsim_S_t20-10_g60_r1.fq.gz Dsim_S_t20-10_g60_r3.fq.gz Dsim_S_t20-10_g60_r5.fq.gz Dsim_S_t20-10_g70_r1.fq.gz Dsim_S_t20-10_g70_r3.fq.gz Dsim_S_t20-10_g70_r5.fq.gz Dsim_S_t20-10_g80_r1.fq.gz Dsim_S_t20-10_g80_r3.fq.gz Dsim_S_t20-10_g80_r5.fq.gz Dsim_S_t20-10_g90_r1.fq.gz Dsim_S_t20-10_g90_r3.fq.gz Dsim_S_t20-10_g90_r5.fq.gz Dsim_S_t28-18_g10_r1.fq.gz Dsim_S_t28-18_g10_r3.fq.gz Dsim_S_t28-18_g10_r5.fq.gz Dsim_S_t28-18_g20_r1.fq.gz Dsim_S_t28-18_g20_r3.fq.gz Dsim_S_t28-18_g20_r5.fq.gz Dsim_S_t28-18_g30_r1.fq.gz Dsim_S_t28-18_g30_r3.fq.gz Dsim_S_t28-18_g30_r5.fq.gz Dsim_S_t28-18_g40_r1.fq.gz Dsim_S_t28-18_g40_r3.fq.gz Dsim_S_t28-18_g40_r5.fq.gz Dsim_S_t28-18_g50_r1.fq.gz Dsim_S_t28-18_g50_r3.fq.gz Dsim_S_t28-18_g50_r5.fq.gz Dsim_S_t28-18_g60_r1.fq.gz Dsim_S_t28-18_g60_r3.fq.gz Dsim_S_t28-18_g60_r5.fq.gz Dsim_S_tX_g0_r1.fq.gz Dsim_S_tX_g0_r3.fq.gz Dsim_S_tX_g0_r5.fq.gz
 ```
 
 Generating the final table
@@ -76,10 +80,30 @@ knitr::kable(tr)
 
 | species | variant | temp. | gen. | rep. | rl.(trimmed) | rc.    | file                            |
 | :------ | :------ | :---: | :--- | :--- | :----------- | :----- | :------------------------------ |
+| Dmel    | M       |  25   | 15   | 1    | 100(100)     | 72.3M  | Dmel\_M\_t25\_g15\_r1.fq.gz     |
+| Dmel    | M       |  25   | 15   | 2    | 100(100)     | 62.2M  | Dmel\_M\_t25\_g15\_r2.fq.gz     |
+| Dmel    | M       |  25   | 15   | 3    | 100(100)     | 67.9M  | Dmel\_M\_t25\_g15\_r3.fq.gz     |
+| Dmel    | M       |  25   | 3    | 1    | 100(100)     | 80.1M  | Dmel\_M\_t25\_g3\_r1.fq.gz      |
+| Dmel    | M       |  25   | 3    | 2    | 100(100)     | 90.8M  | Dmel\_M\_t25\_g3\_r2.fq.gz      |
+| Dmel    | M       |  25   | 3    | 3    | 100(100)     | 80.9M  | Dmel\_M\_t25\_g3\_r3.fq.gz      |
+| Dmel    | M       |  25   | 33   | 3    | 100(100)     | 104.1M | Dmel\_M\_t25\_g33\_r3.fq.gz     |
 | Dmel    | M       |  25   | 34   | 1    | 100(100)     | 60.8M  | Dmel\_M\_t25\_g34\_r1.fq.gz     |
 | Dmel    | M       |  25   | 34   | 2    | 100(100)     | 72.9M  | Dmel\_M\_t25\_g34\_r2.fq.gz     |
+| Dmel    | M       |  25   | 57   | 1    | 100(100)     | 94.2M  | Dmel\_M\_t25\_g57\_r1.fq.gz     |
+| Dmel    | M       |  25   | 57   | 3    | 100(100)     | 73M    | Dmel\_M\_t25\_g57\_r3.fq.gz     |
+| Dmel    | M       |  25   | 62   | 2    | 100(100)     | 74.8M  | Dmel\_M\_t25\_g62\_r2.fq.gz     |
+| Dmel    | S       |  25   | 15   | 1    | 100(100)     | 59.4M  | Dmel\_S\_t25\_g15\_r1.fq.gz     |
+| Dmel    | S       |  25   | 15   | 2    | 100(100)     | 67.1M  | Dmel\_S\_t25\_g15\_r2.fq.gz     |
+| Dmel    | S       |  25   | 15   | 3    | 100(100)     | 64.2M  | Dmel\_S\_t25\_g15\_r3.fq.gz     |
+| Dmel    | S       |  25   | 3    | 2    | 100(100)     | 64.5M  | Dmel\_S\_t25\_g3\_r2.fq.gz      |
+| Dmel    | S       |  25   | 3    | 3    | 100(100)     | 35.8M  | Dmel\_S\_t25\_g3\_r3.fq.gz      |
 | Dmel    | S       |  25   | 34   | 1    | 100(100)     | 78.7M  | Dmel\_S\_t25\_g34\_r1.fq.gz     |
 | Dmel    | S       |  25   | 34   | 2    | 100(100)     | 74.7M  | Dmel\_S\_t25\_g34\_r2.fq.gz     |
+| Dmel    | S       |  25   | 35   | 3    | 100(100)     | 43.1M  | Dmel\_S\_t25\_g35\_r3.fq.gz     |
+| Dmel    | S       |  25   | 4    | 1    | 100(100)     | 54.2M  | Dmel\_S\_t25\_g4\_r1.fq.gz      |
+| Dmel    | S       |  25   | 57   | 1    | 100(100)     | 42.3M  | Dmel\_S\_t25\_g57\_r1.fq.gz     |
+| Dmel    | S       |  25   | 57   | 2    | 100(100)     | 68.2M  | Dmel\_S\_t25\_g57\_r2.fq.gz     |
+| Dmel    | S       |  25   | 57   | 3    | 100(100)     | 53.8M  | Dmel\_S\_t25\_g57\_r3.fq.gz     |
 | Dsim    | M       |  25   | 0    | 1    | 125(100)     | 34.6M  | Dsim\_M\_t25\_g0\_r1.fq.gz      |
 | Dsim    | M       |  25   | 1    | 2    | 125(100)     | 54.5M  | Dsim\_M\_t25\_g1\_r2.fq.gz      |
 | Dsim    | M       |  25   | 1    | 3    | 125(100)     | 53.7M  | Dsim\_M\_t25\_g1\_r3.fq.gz      |

@@ -53,7 +53,7 @@ for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}'
 cd /Volumes/Temp2/filip/2040A/data/hotcold
 for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-robert.txt #required manual editing based on table S1 from  https://doi.org/10.1093/molbev/msac141 since data is trimmed already
 cd /Volumes/Temp2/filip/2040A/data/batch2/fastq
-for i in *gz;do gzip -cd $i|head -2|tail -1|awk -v a="$i" '{print length($1),a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-filip-batch2.txt
+cat /Volumes/Temp2/filip/2040A/data/batch2/metadata_batch2.txt|while read b n; do gzip -cd ${b}.fastq.fq.gz|head -2|tail -1|awk -v a="$n" '{print length($1),a".fq.gz"}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/origRLs-filip-batch2.txt
 
 ##merging files:
 cd /Volumes/Temp2/filip/2040A/results/overview/samples
@@ -63,8 +63,6 @@ join -1 6 -2 2 sampleIDs.txt RLs.txt|awk '{print $2,$3,$4,$5,$6,$7,$1}' > overvi
 cd /Volumes/Temp2/filip/2040A/data/pool
 for i in *.gz;do gzip -cd $i|paste - - - -|wc -l|awk -v a="$i" '{print $1,a}';done > /Volumes/Temp2/filip/2040A/results/overview/samples/readcounts.txt
 
-#quality check
-fastqc -o /Volumes/Temp2/filip/2040A/results/overview/fastqc -d /Volumes/Temp2/filip/2040A/results/overview/fastqc/temp -t 10 Dmel_M_t25_g34_r1.fq.gz Dmel_M_t25_g34_r2.fq.gz Dmel_S_t25_g34_r1.fq.gz Dmel_S_t25_g34_r2.fq.gz Dsim_M_t25_g0_r1.fq.gz Dsim_M_t25_g10_r2.fq.gz Dsim_M_t25_g10_r3.fq.gz Dsim_M_t25_g10_r4.fq.gz Dsim_M_t25_g1_r2.fq.gz Dsim_M_t25_g1_r3.fq.gz Dsim_M_t25_g1_r4.fq.gz Dsim_M_t25_g20_r2.fq.gz Dsim_M_t25_g20_r3.fq.gz Dsim_M_t25_g20_r4.fq.gz Dsim_M_t25_g34_r2.fq.gz Dsim_M_t25_g34_r3.fq.gz Dsim_M_t25_g34_r4.fq.gz Dsim_M_t25_g40_r2.fq.gz Dsim_M_t25_g40_r3.fq.gz Dsim_M_t25_g40_r4.fq.gz Dsim_M_t25_g48_r2.fq.gz Dsim_M_t25_g48_r3.fq.gz Dsim_M_t25_g48_r4.fq.gz Dsim_M_t25_g63_r2.fq.gz Dsim_M_t25_g63_r3.fq.gz Dsim_M_t25_g63_r4.fq.gz Dsim_S_t20-10_g100_r1.fq.gz Dsim_S_t20-10_g100_r3.fq.gz Dsim_S_t20-10_g100_r5.fq.gz Dsim_S_t20-10_g10_r1.fq.gz Dsim_S_t20-10_g10_r3.fq.gz Dsim_S_t20-10_g10_r5.fq.gz Dsim_S_t20-10_g20_r1.fq.gz Dsim_S_t20-10_g20_r3.fq.gz Dsim_S_t20-10_g20_r5.fq.gz Dsim_S_t20-10_g30_r1.fq.gz Dsim_S_t20-10_g30_r3.fq.gz Dsim_S_t20-10_g30_r5.fq.gz Dsim_S_t20-10_g40_r1.fq.gz Dsim_S_t20-10_g40_r3.fq.gz Dsim_S_t20-10_g40_r5.fq.gz Dsim_S_t20-10_g50_r1.fq.gz Dsim_S_t20-10_g50_r3.fq.gz Dsim_S_t20-10_g50_r5.fq.gz Dsim_S_t20-10_g60_r1.fq.gz Dsim_S_t20-10_g60_r3.fq.gz Dsim_S_t20-10_g60_r5.fq.gz Dsim_S_t20-10_g70_r1.fq.gz Dsim_S_t20-10_g70_r3.fq.gz Dsim_S_t20-10_g70_r5.fq.gz Dsim_S_t20-10_g80_r1.fq.gz Dsim_S_t20-10_g80_r3.fq.gz Dsim_S_t20-10_g80_r5.fq.gz Dsim_S_t20-10_g90_r1.fq.gz Dsim_S_t20-10_g90_r3.fq.gz Dsim_S_t20-10_g90_r5.fq.gz Dsim_S_t28-18_g10_r1.fq.gz Dsim_S_t28-18_g10_r3.fq.gz Dsim_S_t28-18_g10_r5.fq.gz Dsim_S_t28-18_g20_r1.fq.gz Dsim_S_t28-18_g20_r3.fq.gz Dsim_S_t28-18_g20_r5.fq.gz Dsim_S_t28-18_g30_r1.fq.gz Dsim_S_t28-18_g30_r3.fq.gz Dsim_S_t28-18_g30_r5.fq.gz Dsim_S_t28-18_g40_r1.fq.gz Dsim_S_t28-18_g40_r3.fq.gz Dsim_S_t28-18_g40_r5.fq.gz Dsim_S_t28-18_g50_r1.fq.gz Dsim_S_t28-18_g50_r3.fq.gz Dsim_S_t28-18_g50_r5.fq.gz Dsim_S_t28-18_g60_r1.fq.gz Dsim_S_t28-18_g60_r3.fq.gz Dsim_S_t28-18_g60_r5.fq.gz Dsim_S_tX_g0_r1.fq.gz Dsim_S_tX_g0_r3.fq.gz Dsim_S_tX_g0_r5.fq.gz
 
 
 ```
