@@ -1,0 +1,51 @@
+---
+title: "Testing_2040-SNP"
+author: "Filip Wierzbicki"
+date: "7/10/2023"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{bash,eval=FALSE}
+cd /Volumes/Temp2/filip/2040A/results/snp-p/raw
+cat *.PPI251.raw|awk '$3==2039'|awk '{print $2,$5,$6,$7,$8,$9}' > ../forR/2040-snp.forR
+
+
+```
+
+
+```{R,eval=TRUE}
+library(ggplot2)
+library(tidyverse)
+
+t<-read.table("/Volumes/Temp2/filip/2040A/results/snp-p/forR/2040-snp.forR")
+names(t)<-c("id","A","C","G","T","cov")
+t$id<-gsub(".sort.bam","",t$id)
+t$species<-gsub("_.*","",t$id)
+t$variant<-gsub("_t.*","",t$id)
+t$variant<-gsub(".*_","",t$variant)
+t$A<-t$A/t$cov
+t$C<-t$C/t$cov
+t$G<-t$G/t$cov
+t$T<-t$T/t$cov
+
+
+tx<-t %>% pivot_longer(cols=c('A','C','G','T'),names_to='snp',values_to='freq')
+
+labs <- c("2040G", "2040A")
+names(labs) <- c("M","S")
+
+g<-ggplot(tx, aes(x=id, y=freq,fill=snp)) + geom_bar(stat = "identity")+theme(legend.title = element_blank(), axis.title.x=element_blank(),axis.title.y=element_blank(),axis.text.x = element_text(angle=45,vjust = 1,hjust = 1,size=5)) +facet_wrap(variant~species,scales = "free",labeller = labeller(variant=labs))
+
+plot(g)
+
+ggsave("/Volumes/Temp2/filip/2040A/results/snp-p/figures/2040-snp_test.pdf",width=12,height=6)
+
+
+
+```
+
+
