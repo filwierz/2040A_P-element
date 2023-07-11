@@ -27,9 +27,12 @@ Prerequisites
 parser.add_argument('--sync', type=argparse.FileType('r'), default=None,dest="file", required=True, help="A sync file")
 parser.add_argument('--snp', type=argparse.FileType('r'), default=None,dest="diasnp", required=True, help="diagnostic SNPs")
 parser.add_argument('--min-cov', type=float, required=False, dest="mincoverage", default=0.0, help="min coverage")
+parser.add_argument('--min-freq', type=float, required=False, dest="minfreq", default=0.99, help="min freq")
+
 
 args = parser.parse_args()
 mcov=args.mincoverage
+mfreq=args.minfreq
 
 toit=collections.defaultdict((lambda:collections.defaultdict(lambda:[str])))
 
@@ -46,13 +49,13 @@ for line in args.file:
     cov=A+T+C+G
     if(cov<mcov):
         continue
-    elif (A/cov>=0.99):
+    elif (A/cov>=mfreq):
         toit[chro][pos][0]="A"
-    elif (T/cov>=0.99):
+    elif (T/cov>=mfreq):
         toit[chro][pos][0]="T"
-    elif (C/cov>=0.99):
+    elif (C/cov>=mfreq):
         toit[chro][pos][0]="C"
-    elif (G/cov>=0.99):
+    elif (G/cov>=mfreq):
         toit[chro][pos][0]="G"
     else:
         toit[chro][pos][0]="NA"
