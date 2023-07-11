@@ -27,9 +27,9 @@ for i in *.mpileup;do n=${i%.mpileup};java -ea -Xmx7g -jar /Volumes/Temp3/filip/
 
 ###sceener:
 cd /Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/testing/sync
-for i in Dmel_*;do n=${i%.sync};python /Volumes/Temp2/filip/2040A/programs/2040A_P-element/helper-scripts/contamination-screener.py --sync $i --snp /Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/withPop_Dmel-scg.SNPs --min-cov 5 > ../screen/${n}.SNPtest;done
+for i in Dmel_*;do n=${i%.sync};python /Volumes/Temp2/filip/2040A/programs/2040A_P-element/helper-scripts/contamination-screener.py --sync $i --snp /Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/withPop_Dmel-scg.SNPs --min-cov 5 --min-freq 0.90 > ../screen/${n}.SNPtest;done
 
-for i in Dsim_*;do n=${i%.sync};python /Volumes/Temp2/filip/2040A/programs/2040A_P-element/helper-scripts/contamination-screener.py --sync $i --snp /Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/withPop_Dsim-scg.SNPs --min-cov 5 > ../screen/${n}.SNPtest;done
+for i in Dsim_*;do n=${i%.sync};python /Volumes/Temp2/filip/2040A/programs/2040A_P-element/helper-scripts/contamination-screener.py --sync $i --snp /Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/withPop_Dsim-scg.SNPs --min-cov 5 --min-freq 0.90 > ../screen/${n}.SNPtest;done
 
 cd ../screen
 for i in *SNPtest;do n=${i%.SNPtest};awk -v a="$n" '{print a,$6}' $i|sort|uniq -c;done > ../forR/summary.forR
@@ -39,8 +39,22 @@ for i in *SNPtest;do n=${i%.SNPtest};awk -v a="$n" '{print a,$6}' $i|sort|uniq -
 library(ggplot2)
 t<-read.table("/Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/testing/forR/summary.forR")
 names(t)<-c("count","sample","status")
+t$species<-gsub("_.*","",t$sample)
+t$variant<-gsub("_t.*","",t$sample)
+t$variant<-gsub(".*_","",t$variant)
 
-g<-ggplot(t, aes(x=sample, y=count,fill=status)) + geom_bar(stat = "identity")+ylab("number of genes")+xlab("samples")+theme(legend.title = element_blank(), axis.text.x = element_text(angle=45,vjust = 1,hjust = 1,size=5)) #
+for (sid in unique(t$sample)) { 
+  i <- t$sample == sid
+  a = sum(t$count[i])
+  t$sum[i] = a
+}
+
+t$freq<-t$count/t$sum
+
+labs <- c("2040G", "2040A")
+names(labs) <- c("M","S")
+
+g<-ggplot(t, aes(x=sample, y=freq,fill=status)) + geom_bar(stat = "identity")+theme(legend.title = element_blank(), axis.text.x = element_text(angle=45,vjust = 1,hjust = 1,size=5),axis.title = element_blank()) +facet_wrap(variant~species,scales = "free",labeller = labeller(variant=labs)) #
 
 plot(g)
 ```
