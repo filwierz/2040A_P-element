@@ -31,6 +31,7 @@ t$id<-gsub(".sort.bam","",t$id)
 t$species<-gsub("_.*","",t$id)
 t$variant<-gsub("_t.*","",t$id)
 t$variant<-gsub(".*_","",t$variant)
+t<-subset(t,cov!=0)
 t$A<-t$A/t$cov
 t$C<-t$C/t$cov
 t$G<-t$G/t$cov
@@ -47,12 +48,9 @@ g<-ggplot(tx, aes(x=id, y=freq,fill=snp)) + geom_bar(stat = "identity")+theme(le
 plot(g)
 ```
 
-    ## Warning: Removed 4 rows containing missing values (position_stack).
-
 ![](2040-snp_test_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
 ggsave("/Volumes/Temp2/filip/2040A/results/snp-p/figures/2040-snp_test.pdf",width=12,height=6)
+ggsave("/Volumes/Temp2/filip/2040A/results/snp-p/figures/2040-snp_test.png",width=12,height=6)
 ```
-
-    ## Warning: Removed 4 rows containing missing values (position_stack).
