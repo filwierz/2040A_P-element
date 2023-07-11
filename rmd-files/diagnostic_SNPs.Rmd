@@ -66,6 +66,6 @@ Dsim genes
 ```{R,eval=TRUE}
 
 s<-read.table("/Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/withPop_Dsim-scg.SNPs")
-names(m)<-c("gene","position","Dsim-variant","Dmel-variant")
+names(s)<-c("gene","position","Dsim-variant","Dmel-variant")
 knitr::kable(s)
 ```
