@@ -74,6 +74,8 @@ t$generation<-as.numeric(gsub("g","",t$generation))
 t$type1<-paste(t$replicate,t$type,sep="_")
 t$type2<-paste(t$species,t$variant,sep="_")
 
+labs <- c("2040G", "2040A")
+names(labs) <- c("M","S")
 
 ##consistent replicate labels
 repl<-read.table("/Volumes/Temp2/filip/2040A/ref/replicate_labels.txt")
@@ -81,7 +83,7 @@ names(repl)<-c("id","rep")
 t$id<-paste(t$species,t$variant,t$replicate,sep="_")
 t<-left_join(t,repl,by="id")
 cols <- c("20-10"="#3393FF", "28-18"="#FF3333", "25"="#10CB40")
-g<-ggplot(t, aes(x=generation, y=copies,color=temperature,by=type1)) + geom_line()+facet_grid(variant ~ species,scales="free")+ylab("insertions per haploid") +scale_color_manual(values = cols)
+g<-ggplot(t, aes(x=generation, y=copies,color=temperature,by=type1)) + geom_line()+facet_grid(species ~ variant,scales="free",labeller = labeller(variant=labs))+ylab("insertions per haploid") +scale_color_manual(values = cols)
 plot(g)
 ```
 
