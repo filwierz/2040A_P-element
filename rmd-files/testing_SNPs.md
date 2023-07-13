@@ -62,6 +62,6 @@ plot(g)
 ![](testing_SNPs_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
-ggsave("/Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/figures/SNPtest-count_overview.pdf",width=12,height=6)
-ggsave("/Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/figures/SNPtest-count_overview.png",width=12,height=6)
+ggsave("/Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/figures/SNPtest_overview.pdf",width=12,height=6)
+ggsave("/Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/figures/SNPtest_overview.png",width=12,height=6)
 ```

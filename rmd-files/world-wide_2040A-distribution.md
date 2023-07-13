@@ -125,5 +125,5 @@ plot(g)
 
 ``` r
 ggsave("/Volumes/Temp2/filip/2040A/results/figures/SNP_distribution-GDL.pdf",width=9,height=5)
-ggsave("/Volumes/Temp2/filip/2040A/results/figures/SNP_distribution-GDL.pdf",width=9,height=5)
+ggsave("/Volumes/Temp2/filip/2040A/results/figures/SNP_distribution-GDL.png",width=9,height=5)
 ```
