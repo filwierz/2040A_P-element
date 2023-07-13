@@ -1,0 +1,13 @@
+Dsim_S_r1 r1
+Dsim_S_r3 r2
+Dsim_S_r5 r3
+Dsim_M_r2 r1
+Dsim_M_r3 r2
+Dsim_M_r4 r3
+Dmel_S_r1 r1
+Dmel_S_r2 r2
+Dmel_S_r3 r3
+Dmel_M_r1 r1
+Dmel_M_r2 r2
+Dmel_M_r3 r3
+Dsim_M_r1 r1
