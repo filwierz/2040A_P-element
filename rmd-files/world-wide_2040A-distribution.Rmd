@@ -31,7 +31,7 @@ for i in *.mpileup;do n=${i%.mpileup};java -ea -Xmx7g -jar /Volumes/Temp3/filip/
 ###sceener:
 cd ../../sync
 mkdir ../screen
-for i in *.sync;do n=${i%.sync};python /Volumes/Temp2/filip/2040A/programs/2040A_P-element/helper-scripts/contamination-screener.py --sync $i --snp /Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/withPop_Dmel-scg.SNPs --min-cov 5 > ../screen/${n}.SNPtest;done
+for i in *.sync;do n=${i%.sync};python /Volumes/Temp2/filip/2040A/programs/2040A_P-element/helper-scripts/contamination-screener.py --sync $i --snp /Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/define/withPop_Dmel-scg.SNPs --min-cov 5 --min-freq 0.90 > ../screen/${n}.SNPtest;done
 cd ../screen
 mkdir ../forR
 for i in *SNPtest;do n=${i%.SNPtest};awk -v a="$n" '{print a,$6}' $i|sort|uniq -c;done > ../forR/summary.forR
@@ -51,14 +51,64 @@ for i in *.PPI251.raw; do n=${i%.sort.bam.PPI251.raw}; cat $i|awk '$3==2039'|awk
 
 ```{R,eval=TRUE}
 library(ggplot2)
+
 t<-read.table("/Volumes/Temp2/filip/2040A/results/gdl/diagnostic_SNPs-testing/forR/summary.forR")
 names(t)<-c("count","sample","status")
 
-g<-ggplot(t, aes(x=sample, y=count,fill=status)) + geom_bar(stat = "identity")+ylab("number of genes")+xlab("samples")+theme(legend.title = element_blank(), axis.text.x = element_text(angle=45,vjust = 1,hjust = 1,size=5)) #
+for (sid in unique(t$sample)) { 
+  i <- t$sample == sid
+  a = sum(t$count[i])
+  t$sum[i] = a
+}
+
+t$freq<-t$count/t$sum
+
+g<-ggplot(t, aes(x=sample, y=freq,fill=status)) + geom_bar(stat = "identity")+theme(legend.title = element_blank(), axis.text.x = element_text(angle=45,vjust = 1,hjust = 1,size=5),axis.title = element_blank())
 
 plot(g)
 
-ggsave("/Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/figures/SNPtest-count_overview-GDL.pdf",width=9,height=6)
+ggsave("/Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/figures/SNPtest_overview-GDL.pdf",width=12,height=6)
+ggsave("/Volumes/Temp2/filip/2040A/results/diagnostic_SNPs/figures/SNPtest_overview-GDL.png",width=12,height=6)
+
+
+
+#plot 2040 SNP on worldmap:
+library(dplyr)
+library(scatterpie)
+
+t<-read.table("/Volumes/Temp2/filip/2040A/results/gdl/worldmap/ppi251/forR/2040A.raw")
+names(t)<-c("count","coverage","sra")
+t<-subset(t,sra!="SRR1769729") ##high coverage replicate of ZW155 (not needed)
+t<-subset(t,sra!="SRR1663610") ##ZW184 (SRR1663610) reported to be of non-African origin (excluded)
+
+d<-read.table("/Volumes/Temp2/filip/2040A/ref/metadata-GDL.txt",sep="\t")
+names(d)<-c("sra","id","year","location","latitude","longitude","study","estimated_year")
+
+td<-left_join(t,d,by="sra")
+td$freq<-td$count/td$coverage
+td[is.na(td)] <- 0
+
+for (sid in unique(td$location)) { 
+  i <- td$location == sid
+  a = mean(td$freq[i])
+  td$S[i] = a
+}
+td<-subset(td,select=c("location","latitude","longitude","S"))
+td<-unique(td)
+td$M<-1-td$S
+
+world_map = map_data("world")
+g<-ggplot(world_map, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill="lightgray", colour = "white") +
+  geom_scatterpie(aes(longitude, y=latitude), data = td,cols=c("S", "M")) +
+  scale_fill_discrete(labels = c("2040A", "2040G"))+xlab("longitude")+ylab("latitude")+
+  theme(legend.title=element_blank())
+
+plot(g)
+
+ggsave("/Volumes/Temp2/filip/2040A/results/figures/SNP_distribution-GDL.pdf",width=9,height=5)
+ggsave("/Volumes/Temp2/filip/2040A/results/figures/SNP_distribution-GDL.pdf",width=9,height=5)
+
 ```
 
 
