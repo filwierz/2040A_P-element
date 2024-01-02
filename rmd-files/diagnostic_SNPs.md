@@ -5,8 +5,14 @@ Filip Wierzbicki
 
 ``` bash
 cd /Volumes/Temp2/filip/2040A/data/strains/Dsim/trimmed
+# -rw-r--r--  1 fschwarz  staff   729767902 Mar 21  2023 Mod6.fq.gz
+# -rw-r--r--  1 fschwarz  staff   723023187 Mar 21  2023 w501.fq.gz
+# -rw-r--r--  1 fschwarz  staff  6184033296 Mar 21  2023 wXD1.fq.gz
 nohup sh -c 'for i in *.fq.gz;do n=${i%.fq.gz};bwa bwasw -t 10 /Volumes/Temp2/filip/2040A/ref/scg-only/Dsim_3scg.fasta $i|samtools sort -@ 4 -m 3G - > /Volumes/Temp2/filip/2040A/map/3scg-only/${n}.sort.bam;done' &
 cd /Volumes/Temp2/filip/2040A/data/strains/Dmel/trimmed
+#-rw-r--r--  1 fschwarz  staff  1870350652 Mar 21  2023 Canton-S.fq.gz
+#-rw-r--r--  1 fschwarz  staff  1645311271 Mar 21  2023 Iso1.fq.gz
+#-rw-r--r--  1 fschwarz  staff  7422492246 Mar 21  2023 Oregon-R.fq.gz
 nohup sh -c 'for i in *.fq.gz;do n=${i%.fq.gz};bwa bwasw -t 10 /Volumes/Temp2/filip/2040A/ref/scg-only/Dmel_3scg.fasta $i|samtools sort -@ 4 -m 3G - > /Volumes/Temp2/filip/2040A/map/3scg-only/${n}.sort.bam;done' &
 
 ##cross-map
