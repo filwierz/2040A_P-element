@@ -1,0 +1,81 @@
+---
+title: "Looking for other SNPs"
+output: rmarkdown::github_document
+editor_options: 
+  markdown: 
+    wrap: sentence
+    author: Riccardo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(kableExtra))
+suppressPackageStartupMessages(library(ggpubr))
+suppressPackageStartupMessages(library(svglite))
+theme_set(theme_bw())
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+data <- read_tsv("/Volumes/Storage/Pele-SNP/data/Pele-data.tsv")
+metadata <- read_tsv("/Volumes/Storage/Pele-SNP/data/metadata.tsv")
+
+(full_data <- data %>% mutate(sample_id = gsub(".fastq.sort.bam", "", sample_id)) %>% inner_join(metadata, by="sample_id") %>%
+  mutate(period = case_when(year<2000 ~ "<2000", year > 1999 & year < 2010 ~ "2000s", year > 2009 ~ "2010s")) %>%
+  mutate(region = case_when(location %in% c("Beijing, China") ~ "Asia", location %in% c("Cameroon", "Gabon", "Ethiopia", "Guinea", "Kenya", "Nigeria", "Rwanda", "South Africa", "Tanzania", "Uganda", "Zambia", "Zimbabwe", "Congo") ~ "Africa", location %in% c("Canada", "Guadeloupe", "Harwich, MA, USA", "Ithaca, USA", "Providence, USA", "USA") ~ "America", location=="Tasmania, Australia" ~ "Oceania", study_id=="Chen2024" ~ "Asia", TRUE ~ "Europe")))
+```
+
+```{r}
+(dsim_snps <- data %>% filter(species=="D. simulans") %>%
+  mutate(sample_id = gsub(".fastq.sort.bam", "", sample_id)) %>%
+  group_by(sample_id) %>% mutate(mean_cov = mean(cov)) %>% filter(mean_cov>1) %>%
+  pivot_longer(cols = c(A, C, G, T), names_to = "base", values_to = "base_cov") %>%
+  select(sample_id, pos, refbase, base, base_cov, cov, hq_cov, species) %>%
+  group_by(sample_id, pos) %>% mutate(max_base = max(base_cov)) %>% filter(max_base == base_cov) %>% ungroup() %>%
+  filter(refbase!=base, max_base>1) %>%
+  group_by(pos) %>% summarise(sample_with_snp = n()) %>% arrange(desc(sample_with_snp)))
+
+(dmel_snps <- data %>% filter(species=="D. melanogaster") %>%
+  mutate(sample_id = gsub(".fastq.sort.bam", "", sample_id)) %>%
+  group_by(sample_id) %>% mutate(mean_cov = mean(cov)) %>% filter(mean_cov>1) %>%
+  pivot_longer(cols = c(A, C, G, T), names_to = "base", values_to = "base_cov") %>%
+  select(sample_id, pos, refbase, base, base_cov, cov, hq_cov, species) %>%
+  group_by(sample_id, pos) %>% mutate(max_base = max(base_cov)) %>% filter(max_base == base_cov) %>% ungroup() %>%
+  filter(refbase!=base, max_base>1) %>%
+  group_by(pos) %>% summarise(sample_with_snp = n()) %>% arrange(desc(sample_with_snp)))
+```
+
+```{r}
+(dmel_31 <- full_data %>% filter(pos==31, study_id!="Kapun2021", year<2010) %>% distinct() %>% group_by(sample_id) %>% mutate(mean_cov = mean(cov)) %>% filter(mean_cov>1) %>% mutate(A=A/cov, C=C/cov, G=G/cov, T=T/cov))
+
+world_map <- map_data("world") %>% filter(region != "Antarctica") %>% filter(lat > -55 & lat < 70, long > -135 & long < 160)
+
+(map_world_wrapped <- ggplot() +
+    geom_map(data = world_map, map = world_map, aes(long, lat, map_id = region), color = "lightgrey", fill = "darkgrey", linewidth = 0.1) +
+    geom_point(data = dmel_31, aes(x = lon, y = lat, color = T, size = T), position = position_jitter(width = 1, height = 1), alpha = 0.25) +
+    scale_color_gradient(low="yellow",high="red") +
+    theme(plot.title = element_text(hjust = 0.5), axis.text = element_blank(), axis.title = element_blank(), axis.ticks = element_blank(), legend.position = "top", panel.background = element_rect(fill="lightblue"), panel.grid = element_blank(), plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm")) +
+    labs(color="31T frequency (before 2010)", size=""))
+
+
+(dmel_31 <- full_data %>% filter(pos==31, study_id!="Kapun2021") %>% distinct() %>% group_by(sample_id) %>% mutate(mean_cov = mean(cov)) %>% filter(mean_cov>1) %>% mutate(A=A/cov, C=C/cov, G=G/cov, T=T/cov))
+
+world_map <- map_data("world") %>% filter(region != "Antarctica") %>% filter(lat > -55 & lat < 70, long > -135 & long < 160)
+
+(map_world_wrapped <- ggplot() +
+    geom_map(data = world_map, map = world_map, aes(long, lat, map_id = region), color = "lightgrey", fill = "darkgrey", linewidth = 0.1) +
+    geom_point(data = dmel_31, aes(x = lon, y = lat, color = T, size = T), position = position_jitter(width = 1, height = 1), alpha = 0.25) +
+    scale_color_gradient(low="yellow",high="red") +
+    theme(plot.title = element_text(hjust = 0.5), axis.text = element_blank(), axis.title = element_blank(), axis.ticks = element_blank(), legend.position = "top", panel.background = element_rect(fill="lightblue"), panel.grid = element_blank(), plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm")) +
+    labs(color="31T frequency", size=""))
+
+ggsave("/Volumes/Storage/Pele-SNP/figs/map31T.png", map_world_wrapped, dpi=1000)
+```
