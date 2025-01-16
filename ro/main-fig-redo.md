@@ -1,0 +1,73 @@
+R Notebook
+================
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you
+execute code within the notebook, the results appear beneath the code.
+
+Try executing this chunk by clicking the *Run* button within the chunk
+or by placing your cursor inside it and pressing *Cmd+Shift+Enter*.
+
+``` r
+library(ggplot2)
+library(dplyr)
+```
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
+theme_set(theme_bw())
+t<-read.table("/Users/rokofler/gh/2040A_P-element/raw-files/PPI241-copynr.forR")
+t2<-read.table("/Users/rokofler/gh/2040A_P-element/raw-files/PPI251-copynr.forR")
+t<-rbind(t,t2)
+names(t)<-c("copies","species","variant","temperature","generation","replicate")
+t$type<-paste(t$temperature,t$variant,t$species,sep="_")
+
+base<-subset(t,type=="tX_S_Dsim")
+baco<-base
+baco$temperature<-c("t20-10")
+baco$type<-paste(baco$temperature,baco$variant,baco$species,sep="_")
+
+baho<-base
+baho$temperature<-c("t28-18")
+baho$type<-paste(baho$temperature,baho$variant,baho$species,sep="_")
+
+#t<-subset(t,type!="t25_M_Dmel")
+#t<-subset(t,type!="t25_S_Dmel")
+t<-subset(t,type!="tX_S_Dsim")
+
+t<-rbind(baco,baho,t)
+
+t$temperature<-gsub("t","",t$temperature)
+t$generation<-as.numeric(gsub("g","",t$generation))
+t$type1<-paste(t$replicate,t$type,sep="_")
+t$type2<-paste(t$species,t$variant,sep="_")
+
+
+##consistent replicate labels
+repl<-read.table("/Users/rokofler/gh/2040A_P-element/raw-files/replicate_labels.txt")
+names(repl)<-c("id","rep")
+t$id<-paste(t$species,t$variant,t$replicate,sep="_")
+t<-left_join(t,repl,by="id")
+cols <- c("10-20°C"="#3393FF", "18-28°C"="#FF3333", "25°C"="#10CB40")
+#t$species<-recode_factor(t$species,Dmel="D.melanogaster",Dsim="D.simulans")
+t$variant<-recode_factor(t$variant,M="2040G",S="2040A")
+t$temperature<-recode_factor(t$temperature,"20-10"="10-20°C","28-18"="18-28°C","25"="25°C")
+g<-ggplot(t, aes(x=generation, y=copies,color=temperature,by=type1)) + geom_line()+facet_grid(species ~ variant,scales="free",space="free")+ylab("insertions per haploid genome") +scale_color_manual(values = cols)+xlab("generations")+ theme(legend.position = c(0.9, 0.7))+scale_x_continuous(breaks=c(0,20,40,60,80,100))
+plot(g)
+```
+
+![](main-fig-redo_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+``` r
+ggsave("/Users/rokofler/gh/2040A_P-element/ro/pubgraph/fig1_main_invasion.pdf",width=8,height=6)
+ggsave("/Users/rokofler/gh/2040A_P-element/ro/pubgraph/fig1_main_invasion.png",width=8,height=6)
+```

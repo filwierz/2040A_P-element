@@ -83,5 +83,4 @@ plot(g)
 ggsave("/Volumes/Temp2/filip/2040A/results/figures/invasion_dynamics.pdf",width=8,height=6)
 ggsave("/Volumes/Temp2/filip/2040A/results/figures/invasion_dynamics.png",width=8,height=6)
 
-
 ```
