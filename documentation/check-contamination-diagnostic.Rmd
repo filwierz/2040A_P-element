@@ -1,0 +1,66 @@
+---
+title: "Check D. simulans contamination using single copy genes"
+output: rmarkdown::github_document
+editor_options: 
+  markdown: 
+    wrap: sentence
+    author: Riccardo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(kableExtra))
+suppressPackageStartupMessages(library(ggpubr))
+suppressPackageStartupMessages(library(svglite))
+theme_set(theme_bw())
+```
+
+```{r}
+metadata <- read_tsv("/Volumes/Storage/Pele-SNP/data/metadata.tsv")
+(data_dmel <- read_tsv("/Volumes/Storage/Pele-SNP/data/scg-dmel.tsv") %>% mutate(sample_id = gsub(".fastq.sort.bam", "", sample_id)) %>% inner_join(metadata, by="sample_id") %>%
+  mutate(region = case_when(location %in% c("Beijing, China") ~ "Asia", location %in% c("Cameroon", "Gabon", "Ethiopia", "Guinea", "Kenya", "Nigeria", "Rwanda", "South Africa", "Tanzania", "Uganda", "Zambia", "Zimbabwe") ~ "Africa", location %in% c("Canada", "Guadeloupe", "Harwich, MA, USA", "Ithaca, USA", "Providence, USA", "USA") ~ "America", location=="Tasmania, Australia" ~ "Oceania", study_id=="Chen2024" ~ "Asia", TRUE ~ "Europe")))
+
+(data_dsim <- read_tsv("/Volumes/Storage/Pele-SNP/data/scg/scg-dsim.tsv") %>% mutate(sample_id = gsub(".fastq.sort.bam", "", sample_id)))
+
+(diagnostic_dmel <- read_tsv("/Volumes/Storage/Pele-SNP/data/diagnostic-snps-dmel.tsv") %>% mutate(pos = pos-1) %>% mutate(gene_pos = paste0(TEfam, pos)) %>% select(-TEfam, -pos))
+```
+
+```{r}
+data_dmel_diag <- data_dmel %>% mutate(gene_pos = paste0(TEfam, pos)) %>% filter(study_id!="Kapun2021") %>% inner_join(diagnostic_dmel, by="gene_pos") %>% mutate(A=A/cov, C=C/cov, G=G/cov, T=T/cov) %>% pivot_longer(cols = c(A, T, C, G), names_to = "base", values_to = "base_cov")
+
+(data_dmel_diag_dsimsnp <- data_dmel_diag %>% filter(base==Dsim_variant) %>% group_by(sample_id, year) %>% dplyr::summarise(mean_sim_cov = mean(base_cov)) %>% arrange(desc(mean_sim_cov)))
+
+(contamination_plot_dmel <- ggplot(data_dmel_diag_dsimsnp, aes(x = reorder(sample_id, year), y = mean_sim_cov)) +
+  geom_bar(stat = "identity", position = "dodge", fill = "red") +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.text.x = element_text(size = 1, angle = 90)) +
+  labs(x="D. melanogaster sample", y="mean D. simulans allele frequency")+
+  ylim(0, 1))
+
+ggsave("/Volumes/Storage/Pele-SNP/figs/dmel-contamination.png", contamination_plot_dmel, dpi=1000)
+```
+
+
+```{r}
+data_dsim_diag <- data_dsim %>% mutate(gene_pos = paste0(TEfam, pos)) %>% inner_join(diagnostic_dmel, by="gene_pos") %>% mutate(A=A/cov, C=C/cov, G=G/cov, T=T/cov) %>% pivot_longer(cols = c(A, T, C, G), names_to = "base", values_to = "base_cov")
+
+(data_dsim_diag_dsimsnp <- data_dsim_diag %>% filter(base==Dsim_variant) %>% group_by(sample_id) %>% filter(cov>0) %>% dplyr::summarise(mean_sim_cov = mean(base_cov)) %>% arrange(desc(mean_sim_cov)))
+
+(contamination_plot_dsim <- ggplot(data_dsim_diag_dsimsnp, aes(x = sample_id, y = mean_sim_cov)) +
+  geom_bar(stat = "identity", position = "dodge", fill = "red") +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.text.x = element_text(size = 1, angle = 90)) +
+  labs(x="D. simulans sample", y="mean D. simulans allele frequency")+
+  ylim(0, 1))
+
+ggsave("/Volumes/Storage/Pele-SNP/figs/dsim-contamination.png", contamination_plot_dsim, dpi=1000)
+```
+
+
